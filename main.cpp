@@ -30,7 +30,7 @@ vector <vector<double> > readFile(string problem_file_name) {
     // WILL NEED FIXING IN FILES WITH MORE WRITING AT BEGINING. WILL IGNORE TO FIRST 'p'
     
     string line;
-    while(true) {
+    while(problem_stream.peek()!=EOF) {
         problem_stream.ignore(big_int, 'N'); //jump to where line starts with p
         char curr_line[100];
         problem_stream.getline(curr_line, 100);
@@ -67,7 +67,7 @@ vector <vector<double> > readFile(string problem_file_name) {
         city.clear();
         //problem_stream >> next_item_in_stream; //advance past "0"
     }
-    cout << "numcl " << vector_of_cities.size()  << endl;
+    cout << "numcities " << vector_of_cities.size()  << endl;
     //return address
     
     cout << "end of debug for file parsing" << endl;
