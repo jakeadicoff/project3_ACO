@@ -16,7 +16,7 @@ struct Ant {
 
 class AntSystem {
  public:
-    void AntSystem();
+    AntSystem();
     
 
  private:
@@ -27,7 +27,8 @@ class AntSystem {
     double alpha, beta, evap_rate;
     int colony_size, num_iterations, num_cities;
     
-    void take_next_step(int ant_index);
+    int probabilistic_next_step(int ant_index);
+    void init_dists();
 };
 
 #endif
