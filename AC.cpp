@@ -1,3 +1,15 @@
-#include "ACO.h"
+#include "AC.h"
 
-using namespace std;
+AntSystem::AntSystem() {
+    
+}
+
+
+void AntSystem::init_dists() {
+    
+}
+
+int AntSystem::probabilistic_next_step(int ant_index) {
+    
+}
+
