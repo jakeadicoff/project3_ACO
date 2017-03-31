@@ -16,4 +16,25 @@ using namespace std;
 
 
 
+class ACS : public AntSystem {
+
+public:
+    void runACS();
+    ACS();
+    
+    
+private:
+    void pheromone_update();
+    void exploitation_step(int ant_index);
+    void take_step(int ant_index);
+    void wear_away(int start_city, int end_city);
+    void add_pheromone(int start_city, int end_city);
+    
+    
+};
+
 #endif
+
+
+
+
