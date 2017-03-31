@@ -4,31 +4,36 @@
 #include <vector>
 #include <string>
 #include <set>
-
+#include <cmath>
+#include <random>
 
 using namespace std;
 
 struct Ant {
-    set<int> tour;
-    set<int> unvisited;
-    double length;
+  vector<int> tour;
+  vector<bool> unvisited;
+  double length;
+  int last() {return tour[tour.size()-1];}
 };
 
 class AntSystem {
  public:
-    AntSystem();
-    
+  AntSystem(double a,double b,double e,int colonySize, int numIterations, vector <vector <double > > cityLocations);
+  
 
  private:
-    Ant best_ant;
-    vector<Ant> colony;
-    vector<vector<double>> dists;
-    vector<vector<double>> pheromones;
-    double alpha, beta, evap_rate;
-    int colony_size, num_iterations, num_cities;
-    
-    int probabilistic_next_step(int ant_index);
-    void init_dists();
+  Ant best_ant;
+  vector<Ant> colony;
+  vector<vector<double>> dists;
+  vector<vector<double>> pheromones;
+  double alpha, beta, evap_rate;
+  int colony_size, num_iterations, num_cities;
+  
+  int probabilistic_next_step(int ant_index);
+  void init_dists_and_phers(vector<vector< double> > cityLocations);
+  double euc_dist(vector <double> a, vector <double> b);
+  double lookup_dist(int i, int j);
+  double lookup_pher(int i, int j);
 };
 
 #endif

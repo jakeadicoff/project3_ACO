@@ -1,15 +1,73 @@
 #include "AC.h"
 
-AntSystem::AntSystem() {
-    
+double BIG_DOUBLE = 999999999999999;
+
+AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterations, vector <vector <double > > cityLocations) {
+  this->alpha = a;
+  this->beta = b;
+  this->evap_rate = e;
+  this->colony_size = colonySize;
+  this->num_iterations = numIterations;
+  this->num_cities = cityLocations.size();
+  vector<vector <double > > ps;
+  vector<vector <double > > ds;
+  Ant dummy_ant;
+  dummy_ant.length = BIG_DOUBLE;
+  this->dists = ds;
+  this->pheromones = ps;
+  this->best_ant = dummy_ant;
 }
 
 
-void AntSystem::init_dists() {
-    
+void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
+  vector <double> row1;
+  vector <double> row2;
+  for(int i = 0; i < num_cities; i++) {
+    row1.clear();
+    row2.clear();
+    for(int j = 0; j <= i; j++) {
+      double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
+      row1.push_back(dist_ij);
+      row2.push_back(0);
+    }
+    dists.push_back(row1);
+    pheromones.push_back(row2);
+  }
 }
 
+double AntSystem::euc_dist(vector <double> a, vector <double> b) {
+  return sqrt(pow(a[0]-b[0],2)+pow(a[1]-b[1],2));
+}
+
+double AntSystem::lookup_dist(int i, int j) {
+  if( i > j) return dists[i][j];
+  return dists[j][i];
+}
+
+double AntSystem::lookup_pher(int i, int j) {
+  if( i > j) return pheromones[i][j];
+  return pheromones[j][i];
+}
+  
 int AntSystem::probabilistic_next_step(int ant_index) {
-    
+  vector<double> probability_vector;
+  // num cities is a bool vector
+  for(int i = 0; i < num_cities; i++ ) { 
+    // initialize weight to 0
+    double weight = 0;
+    // if city is unvisited update weight accordingly
+    if(colony[ant_index].unvisited[i]) {
+      weight = pow(lookup_pher(colony[ant_index].last(),i),alpha) +  pow(lookup_dist(colony[ant_index].last(),i),beta);
+    }
+    // push back weight
+    probability_vector.push_back(weight);
+  }
+  // this line may only need to be used once, i forget CHECK IT
+  default_random_engine generator;
+  // black box
+  discrete_distribution<double> distribution (probability_vector.begin(),probability_vector.end());
+  return distribution(generator);
+  // that was neat
 }
+
 

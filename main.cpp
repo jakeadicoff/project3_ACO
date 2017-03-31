@@ -8,8 +8,8 @@ int main(int argc, char** argv) {
     
     vector<vector<double>> cities;
     cities = readFile("a280.tsp");
-    cout << cities[0][0] << cities [0][1] << endl;
-    
+    //cout << cities[0][0] << cities [0][1] << endl;
+    //test_prob();
 }
 
 vector <vector<double> > readFile(string problem_file_name) {
@@ -74,3 +74,25 @@ vector <vector<double> > readFile(string problem_file_name) {
     
     return vector_of_cities;
 }
+
+void test_prob() {
+  default_random_engine generator;
+  vector <double> v;
+  v.push_back(5.2);
+  v.push_back(0.9);
+  //double prob [2][1];
+  //prob[0][0] = 5.4;
+  //prob[1][0] = 1.1;
+  //  array <double,2> p = prob;
+  discrete_distribution<double> distribution (v.begin(),v.end()); //{5,1};
+
+
+  while(true) {
+    string goAgain;
+    cout << distribution(generator) << endl;
+    cin >> goAgain;
+    if(goAgain == "n") break;
+  }
+}
+
+
