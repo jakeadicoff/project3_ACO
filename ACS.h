@@ -30,6 +30,7 @@ private:
     void wear_away(int start_city, int end_city);
     void add_pheromone(int start_city, int end_city);
     
+    double elitism_factor;
     
 };
 
