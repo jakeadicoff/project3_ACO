@@ -14,7 +14,7 @@
 
 using namespace std;
 
-
+srand(time(NULL));
 
 class ACS : public AntSystem {
 
@@ -27,10 +27,12 @@ private:
     void pheromone_update();
     void exploitation_step(int ant_index);
     void take_step(int ant_index);
-    void wear_away(int start_city, int end_city);
-    void add_pheromone(int start_city, int end_city);
+    void wear_away();
+    void add_pheromone();
     
-    double elitism_factor;
+    double wear, tau_0;
+    
+    double rand_between_01();
     
 };
 
