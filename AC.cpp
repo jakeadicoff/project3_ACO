@@ -19,15 +19,19 @@ AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterat
 }
 
 
-void AntSystem::init_dists(vector <vector <double> > cityLocations) {
-  vector <double> row;
+void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
+  vector <double> row1;
+  vector <double> row2;
   for(int i = 0; i < num_cities; i++) {
-    row.clear();
+    row1.clear();
+    row2.clear();
     for(int j = 0; j <= i; j++) {
       double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
-      row.push_back(dist_ij);
+      row1.push_back(dist_ij);
+      row2.push_back(0);
     }
-    dists.push_back(row);
+    dists.push_back(row1);
+    pheromones.push_back(row2);
   }
 }
 
@@ -46,19 +50,24 @@ double AntSystem::lookup_pher(int i, int j) {
 }
   
 int AntSystem::probabilistic_next_step(int ant_index) {
-  double sum = 0;
   vector<double> probability_vector;
-  // consider computing this once when ant picks first city, and then subtract from the sum whenever an ant picks a new leg. ew.
+  // num cities is a bool vector
   for(int i = 0; i < num_cities; i++ ) { 
-    double x = 0;
+    // initialize weight to 0
+    double weight = 0;
+    // if city is unvisited update weight accordingly
     if(colony[ant_index].unvisited[i]) {
-      x = pow(lookup_pher(colony[ant_index].last(),i),alpha) +  pow(lookup_dist(colony[ant_index].last(),i),beta);
+      weight = pow(lookup_pher(colony[ant_index].last(),i),alpha) +  pow(lookup_dist(colony[ant_index].last(),i),beta);
     }
-    sum += x;
-    probability_vector.push_back(x);
+    // push back weight
+    probability_vector.push_back(weight);
   }
-  for(int i = 0; i < probability_vector.size(); i++){
-    probability_vector[i] = probability_vector[i]/sum;
-  }
+  // this line may only need to be used once, i forget CHECK IT
+  default_random_engine generator;
+  // black box
+  discrete_distribution<double> distribution (probability_vector.begin(),probability_vector.end());
+  return distribution(generator);
+  // that was neat
 }
+
 
