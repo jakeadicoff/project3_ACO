@@ -12,5 +12,6 @@
 
 using namespace std;
 
+vector <vector<double> > readFile(string problem_file_name);
 
 #endif
