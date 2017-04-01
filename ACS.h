@@ -11,6 +11,7 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
+#include <time.h>
 
 using namespace std;
 
@@ -20,17 +21,21 @@ class ACS : public AntSystem {
 
 public:
     void runACS();
-    ACS();
+    ACS(double a, double b, double e, int colonySize, int numIterations, vector<vector<double>> cityLocations, double t0, double wearFactor, double q0);
     
     
 private:
     void pheromone_update();
     void exploitation_step(int ant_index);
-    void take_step(int ant_index);
-    void wear_away(int start_city, int end_city);
-    void add_pheromone(int start_city, int end_city);
+    void make_tours();
+    void wear_away();
+    void add_pheromone();
+    void init_phers();
+    double length_nn();
     
-    double elitism_factor;
+    double epsilon, tau_0, q_0;
+    
+    
     
 };
 

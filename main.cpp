@@ -1,13 +1,46 @@
 #include "main.h"
 
+
 using namespace std;
 
 
 int main(int argc, char** argv) {
-    cout << "hello world" << endl;
+    string ant_system = argv[1];
+    string problem_file_name = argv[2];
     
-    vector<vector<double>> cities;
-    cities = readFile("a280.tsp");
+    double alpha, beta, evap_rate, epsilon, tau_0, q_0, elitism;
+    int colony_size, num_iterations, num_cities;
+    
+    colony_size = 20;
+    alpha = 1;
+    beta = 3;
+    evap_rate = 0.1;
+    elitism = colony_size;
+    epsilon = 0.1;
+    tau_0 = 1; //actually set this in constructor, so this is a placeholder
+    q_0 = 0.9;
+    num_iterations = 100;
+    
+    //process file and get pointer to vector of clauses
+    vector <vector<double> > cities = readFile(problem_file_name);
+    num_cities = cities.size();
+    
+    cout << "******************************************" << endl;
+    cout << " File name: " << problem_file_name << endl;
+//    if (ant_system == "EAS") {
+//        EAS eas_alg(populationSize, selectionType, crossoverType,
+//                  crossoverProbability, mutationProbability, generationNumber,
+//                  all_clauses, numVars );
+//        eas_alg.runEAS();
+//    }
+    if (ant_system == "ACS") {
+        ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, tau_0, epsilon, q_0);
+        acs_alg.runACS();
+    }
+    cout << "******************************************" << endl;
+    return 0;
+
+    //cities = readFile("a280.tsp");
     //cout << cities[0][0] << cities [0][1] << endl;
     //test_prob();
 }
