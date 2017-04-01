@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     cout << "******************************************" << endl;
     cout << " File name: " << problem_file_name << endl;
     if (ant_system == "EAS") {
-        EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, city_locations, elitism);
+        EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, elitism, tau_0);
         eas_alg.run_eas();
     }
     if (ant_system == "ACS") {

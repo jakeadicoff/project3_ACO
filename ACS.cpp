@@ -1,6 +1,6 @@
 #include "ACS.h"
 
-ACS::ACS(double a, double b, double e, int colonySize, int numIterations, vector<vector<double>> cityLocations, double t0, double wearFactor, double q0) : AntSystem(a, b, e, colonySize, numIterations, cityLocations) {
+ACS::ACS(double a, double b, double e, int colonySize, int numIterations, vector<vector<double>> cityLocations, double t0, double wearFactor, double q0) : AntSystem(a, b, e, colonySize, numIterations, cityLocations, t0) {
     //AntSystem(a, b, e, colonySize, numIterations, cityLocations);
     this->epsilon = wearFactor;
     //this->tau_0 = t0;
@@ -21,8 +21,10 @@ void ACS::runACS() {
     }
     
     double end_time = clock();
+    
     cout << "The shortest ACS path is " << best_ant.length << endl;
     cout << "The shortest greedy path is " << length_nn() << endl;
+    cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
 }
 
 

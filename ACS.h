@@ -31,7 +31,6 @@ private:
     void wear_away();
     void add_pheromone();
     void init_phers();
-    double length_nn();
     
     double epsilon, tau_0, q_0;
     

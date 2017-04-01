@@ -3,8 +3,8 @@
 using namespace std;
 
 
-//EAS::EAS(double a, double b, double e, int colonySize, int numIterations, vector <vector < double > > cityLocations, double elitismFactor) {
-  //AntSystem(a,b,e,colonySize,numIterations,cityLocations);
+//EAS::EAS(double a, double b, double e, int colonySize, int numIterations, vector <vector < double > > cityLocations, double elitismFactor, double tau_0) {
+  //AntSystem(a,b,e,colonySize,numIterations,cityLocations, tau_0);
   //this->elitism_factor = elitismFactor;
   //cout << alpha << endl;
 //}
