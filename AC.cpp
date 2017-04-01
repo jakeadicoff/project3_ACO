@@ -76,10 +76,17 @@ void AntSystem::probabilistic_next_step(int ant_index) {
     // update the ant's tour and unvisited vector
     colony[ant_index].unvisited[next_city] = false;
     colony[ant_index].tour.push_back(next_city);
-    colony[ant_index].length += dists[curr_city][next_city];
+    colony[ant_index].length += lookup_dist(curr_city,next_city);
     // that was neat
 }
 
-
+void AntSystem::clear_ants() {
+  for(int i = 0; i < colony_size; i++) {
+    colony[i].tour.clear();
+    colony[i].length = 0;
+    vector<bool> true_vec(num_cities, true);
+    colony[i].unvisited = true_vec;
+  }
+}
 
 
