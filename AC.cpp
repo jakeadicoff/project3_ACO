@@ -3,23 +3,35 @@
 
 
 AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterations, vector <vector <double > > cityLocations, double t0) {
+    
     this->alpha = a;
     this->beta = b;
     this->evap_rate = e;
     this->colony_size = colonySize;
     this->num_iterations = numIterations;
     this->num_cities = cityLocations.size();
+    
     vector<vector <double > > ps;
     vector<vector <double > > ds;
     Ant dummy_ant;
+    vector<Ant> dummy_colony(colony_size, dummy_ant);
+    this->colony = dummy_colony;
     dummy_ant.length = BIG_DOUBLE;
+    
     this->dists = ds;
     this->pheromones = ps;
     this->best_ant = dummy_ant;
-    this->tau_0 = 1 / (colony_size * length_nn());
+    
     init_dists_and_phers(cityLocations);
+    this->tau_0 = 1 / (colony_size * length_nn());
+    
 }
-
+void AntSystem::make_ants() {
+    for(int i = 0; i < colony_size; ++i) {
+        Ant new_ant;
+        colony.push_back(new_ant);
+    }
+}
 
 void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
     vector <double> row1;
@@ -27,7 +39,7 @@ void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
     for(int i = 0; i < num_cities; i++) {
         row1.clear();
         row2.clear();
-        for(int j = 0; j <= i; j++) {
+        for(int j = 0; j < i; j++) {
             double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
             row1.push_back(dist_ij);
             row2.push_back(0);
@@ -36,6 +48,7 @@ void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
         pheromones.push_back(row2);
     }
     
+    clear_ants();
     init_phers();
 }
 
@@ -73,7 +86,7 @@ void AntSystem::probabilistic_next_step(int ant_index) {
     default_random_engine generator;
     // black box
     discrete_distribution<double> distribution (probability_vector.begin(),probability_vector.end());
-
+    
     int next_city = distribution(generator);
     
     // update the ant's tour and unvisited vector
@@ -84,12 +97,12 @@ void AntSystem::probabilistic_next_step(int ant_index) {
 }
 
 void AntSystem::clear_ants() {
-  for(int i = 0; i < colony_size; i++) {
-    colony[i].tour.clear();
-    colony[i].length = 0;
-    vector<bool> true_vec(num_cities, true);
-    colony[i].unvisited = true_vec;
-  }
+    for(int i = 0; i < colony_size; i++) {
+        colony[i].tour.clear();
+        colony[i].length = 0;
+        vector<bool> true_vec(num_cities, true);
+        colony[i].unvisited = true_vec;
+    }
 }
 
 double AntSystem::length_nn() {
@@ -106,8 +119,8 @@ double AntSystem::length_nn() {
         
         for(int j = 0; j < num_cities; ++j) {
             if(nn_ant.unvisited[j] == true) {
-                double path_dist = lookup_dist(curr_city, j);
                 
+                double path_dist = lookup_dist(curr_city, j);
                 // if this city is the new nearest, update
                 if(path_dist < dist_to_nearest_city) {
                     nearest_city = j;

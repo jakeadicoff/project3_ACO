@@ -2,6 +2,7 @@
 #define __AC_h
 
 #include <vector>
+#include <iostream>
 #include <string>
 #include <set>
 #include <cmath>
@@ -40,6 +41,7 @@ protected:
     void clear_ants();
     void init_phers();
     double length_nn();
+    void make_ants();
 };
 
 #endif

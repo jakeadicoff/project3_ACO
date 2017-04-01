@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
         EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, elitism, tau_0);
         eas_alg.run_eas();
     }
-    if (ant_system == "ACS") {
+    else if (ant_system == "ACS") {
         ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, tau_0, epsilon, q_0);
         acs_alg.runACS();
     }
@@ -65,11 +65,9 @@ vector <vector<double> > readFile(string problem_file_name) {
         problem_stream.ignore(big_int, 'N'); //jump to where line starts with p
         char curr_line[100];
         problem_stream.getline(curr_line, 100);
-        cout << curr_line << endl;
         line = curr_line;
         
         if(line.substr(0, 4).compare("ODE_") == 0) {
-            cout << "header found" << endl;
             break;
         }
     }
@@ -78,7 +76,6 @@ vector <vector<double> > readFile(string problem_file_name) {
     iss.ignore(big_int, 'N'); //jump to after 'NODE_COORD_SECTION' in same line
     
     problem_stream >> next_item_in_stream; //to first literal in first clause
-    cout << next_item_in_stream << endl;
     
     while(problem_stream.peek()!=EOF) { //run until end of file
         vector <double> city; //make clause vectore to hold literals
@@ -90,7 +87,6 @@ vector <vector<double> > readFile(string problem_file_name) {
             break;
         }
         for(int i = 0; i < 2; ++i) { //run until end of line
-            cout << next_item_in_stream << endl;
             city.push_back(stod(next_item_in_stream));
             problem_stream >> next_item_in_stream;
         }
@@ -98,7 +94,7 @@ vector <vector<double> > readFile(string problem_file_name) {
         city.clear();
         //problem_stream >> next_item_in_stream; //advance past "0"
     }
-    cout << "numcities " << vector_of_cities.size()  << endl;
+    cout << "Number of Cities: " << vector_of_cities.size()  << endl;
     //return address
     
     cout << "end of debug for file parsing" << endl;
@@ -106,24 +102,5 @@ vector <vector<double> > readFile(string problem_file_name) {
     return vector_of_cities;
 }
 
-void test_prob() {
-  default_random_engine generator;
-  vector <double> v;
-  v.push_back(5.2);
-  v.push_back(0.9);
-  //double prob [2][1];
-  //prob[0][0] = 5.4;
-  //prob[1][0] = 1.1;
-  //  array <double,2> p = prob;
-  discrete_distribution<double> distribution (v.begin(),v.end()); //{5,1};
-
-
-  while(true) {
-    string goAgain;
-    cout << distribution(generator) << endl;
-    cin >> goAgain;
-    if(goAgain == "n") break;
-  }
-}
 
 
