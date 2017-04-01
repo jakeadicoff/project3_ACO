@@ -1,16 +1,22 @@
 #include "ACS.h"
 
-ACS::ACS(double a, double b, double e, int colonySize, int numIterations, vector<vector<double>> cityLocations, double t0, double wearFactor) {
-    AntSystem(a, b, e, colonySize, numIterations, cityLocations);
+ACS::ACS(double a, double b, double e, int colonySize, int numIterations, vector<vector<double>> cityLocations, double t0, double wearFactor, double q0) : AntSystem(a, b, e, colonySize, numIterations, cityLocations) {
+    //AntSystem(a, b, e, colonySize, numIterations, cityLocations);
     this->epsilon = wearFactor;
     this->tau_0 = t0;
+    this->q_0 = q0;
+    srand(time(NULL));
     
     // give all paths epsilon * tau_0 pheromones
     init_phers();
 }
 
 void ACS::runACS() {
-    
+    for(int i = 0; i < num_iterations; ++i) {
+        make_tours();
+        wear_away();
+        add_pheromone();
+    }
 }
 
 // add initial pheromone to every path
@@ -38,7 +44,7 @@ void ACS::add_pheromone() {
         int start_city = best_ant.tour[j];
         int end_city;
         if(j < num_cities - 1) {
-            end_city = best_ant.tour[j+1]
+            end_city = best_ant.tour[j+1];
         }
         else {
             end_city = best_ant.tour[0];
@@ -56,7 +62,7 @@ void ACS::wear_away() {
             int start_city = colony[i].tour[j];
             int end_city;
             if(j < num_cities - 1) {
-                end_city = colony[i].tour[j+1]
+                end_city = colony[i].tour[j+1];
             }
             else {
                 end_city = colony[i].tour[0];
@@ -74,7 +80,7 @@ void ACS::exploitation_step(int ant_index) {
     double max_city_value = -1;
     
     for(int i = 0; i < num_cities; ++i) {
-        if(colony[ant_index].unvisited[i] = true) {
+        if(colony[ant_index].unvisited[i] == true) {
             int curr_city = colony[ant_index].tour.back();
             double path_dist = lookup_dist(curr_city, i);
             double path_pher = lookup_pher(curr_city, i);
@@ -93,9 +99,30 @@ void ACS::exploitation_step(int ant_index) {
     colony[ant_index].tour.push_back(max_city);
 }
 
-double ACS::rand_between_01() {
-    return (double) rand() / RAND_MAX;
+void ACS::make_tours() {
+    for(int i = 0; i < colony_size; ++i) {
+        
+        colony[i].tour.clear();
+        
+        int starting_city = rand() % num_cities;
+        colony[i].tour.push_back(starting_city);
+        
+        for(int j = 0; j < num_cities - 1; ++j) {
+            double step_prob = (double) rand() / RAND_MAX;
+            
+            if(step_prob < q_0) {
+                exploitation_step(i);
+            }
+            else {
+                probabilistic_next_step(i);
+            }
+        }
+        
+        // make ant return to starting city
+        colony[i].tour.push_back(starting_city);
+    }
 }
+
 
 
 
