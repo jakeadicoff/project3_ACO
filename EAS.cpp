@@ -15,6 +15,7 @@ using namespace std;
 void EAS::run_eas() {
   //init_phers();
   for(int i = 0; i < num_iterations; i++) {
+    clear_ants();
     pick_initial_cities();
     for(int j = 0; j < num_cities - 1; j++) {
       for(int k = 0; k < colony_size; k++) {
@@ -22,7 +23,7 @@ void EAS::run_eas() {
       } // colony
     } // cities
     add_last_cities();
-    //pheromone_update();
+    pheromone_update();
   } // iterations
 }
 
@@ -47,4 +48,41 @@ void EAS::update_ant(int ant_index, int city_index) {
   colony[ant_index].length += lookup_dist(colony[ant_index].last(),city_index);
 }
 
-//void EAS::pheromone_update
+void EAS::pheromone_update() {
+  for(int i = 0; i < num_cities; i++) {
+    for(int j = 0; j <= i; j++) {
+      pheromones[i][j] = (1-evap_rate)*pheromones[i][j];
+      pheromones[i][j] += pher_sum(i,j);
+      pheromones[i][j] += elitism_factor*in_bsf(i,j);
+    }
+  }
+}
+
+double EAS::in_bsf(int city_1, int city_2) {
+  for(int i = 0; i < num_cities; i++) {
+    if((best_ant.tour[i] == city_1 && best_ant.tour[loop_list(i+1,num_cities)] == city_2 ) || (best_ant.tour[i] == city_2 && best_ant.tour[loop_list(i+1,num_cities)] == city_1 )) { 
+      return 1/best_ant.length;
+    }
+  }
+  return 0;
+}
+
+double EAS::pher_sum(int city_1, int city_2) {
+  double sum = 0;
+  for(int i = 0; i < colony_size; i++) {
+    for(int j = 0; j < num_cities; j++) {
+      if((colony[i].tour[j] == city_1 && colony[i].tour[loop_list(j+1,num_cities)] == city_2) || (colony[i].tour[j] == city_2 && colony[i].tour[loop_list(j+1,num_cities)] == city_1)) {     
+	sum += 1/colony[i].length;
+	break;
+      }
+    }
+  }
+  return sum;
+}
+
+int EAS::loop_list(int i, int list_size) {
+  if(0 > i) {
+    return list_size - 1;
+  }
+  return i%list_size;
+}
