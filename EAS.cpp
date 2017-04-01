@@ -13,17 +13,16 @@ using namespace std;
 
 
 void EAS::run_eas() {
+  //init_phers();
   for(int i = 0; i < num_iterations; i++) {
     pick_initial_cities();
     for(int j = 0; j < num_cities - 1; j++) {
-
       for(int k = 0; k < colony_size; k++) {
-	int city_index = probabilistic_next_step(k);  
-	update_ant(k,city_index);
+        probabilistic_next_step(k);  
       } // colony
     } // cities
     add_last_cities();
-    // pheromone_update();
+    //pheromone_update();
   } // iterations
 }
 
@@ -48,3 +47,4 @@ void EAS::update_ant(int ant_index, int city_index) {
   colony[ant_index].length += lookup_dist(colony[ant_index].last(),city_index);
 }
 
+//void EAS::pheromone_update
