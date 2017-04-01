@@ -37,6 +37,7 @@ protected:
     double euc_dist(vector <double> a, vector <double> b);
     double lookup_dist(int i, int j);
     double lookup_pher(int i, int j);
+    void clear_ants();
 };
 
 #endif
