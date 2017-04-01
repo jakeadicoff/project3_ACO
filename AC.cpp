@@ -1,6 +1,6 @@
 #include "AC.h"
 
-double BIG_DOUBLE = 999999999999999;
+
 
 AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterations, vector <vector <double > > cityLocations) {
     this->alpha = a;
@@ -50,7 +50,10 @@ double AntSystem::lookup_pher(int i, int j) {
     return pheromones[j][i];
 }
 
-int AntSystem::probabilistic_next_step(int ant_index) {
+void AntSystem::probabilistic_next_step(int ant_index) {
+    
+    int curr_city = colony[ant_index].tour.back();
+    
     vector<double> probability_vector;
     // num cities is a bool vector
     for(int i = 0; i < num_cities; i++ ) {
@@ -67,7 +70,13 @@ int AntSystem::probabilistic_next_step(int ant_index) {
     default_random_engine generator;
     // black box
     discrete_distribution<double> distribution (probability_vector.begin(),probability_vector.end());
-    return distribution(generator);
+
+    int next_city = distribution(generator);
+    
+    // update the ant's tour and unvisited vector
+    colony[ant_index].unvisited[next_city] = false;
+    colony[ant_index].tour.push_back(next_city);
+    colony[ant_index].length += dists[curr_city][next_city];
     // that was neat
 }
 

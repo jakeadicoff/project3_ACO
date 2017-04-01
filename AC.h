@@ -9,6 +9,7 @@
 
 using namespace std;
 
+const double BIG_DOUBLE = 999999999999999;
 
 
 struct Ant {
@@ -31,7 +32,7 @@ protected:
     double alpha, beta, evap_rate;
     int colony_size, num_iterations, num_cities;
     
-    int probabilistic_next_step(int ant_index);
+    void probabilistic_next_step(int ant_index);
     void init_dists_and_phers(vector<vector< double> > cityLocations);
     double euc_dist(vector <double> a, vector <double> b);
     double lookup_dist(int i, int j);

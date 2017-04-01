@@ -2,6 +2,8 @@
 #define __main_h
 
 #include "AC.h"
+#include "ACS.h"
+#include "EAS.h"
 #include <iostream>
 #include <vector>
 #include <string>
