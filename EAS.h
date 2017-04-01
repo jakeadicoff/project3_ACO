@@ -28,6 +28,9 @@ class EAS : public AntSystem {
   void add_last_cities();
   void update_ant(int ant_index, int city_index);
   void pheromone_update();
+  double in_bsf(int city_1, int city_2);
+  double pher_sum(int city_1, int city_2);
+  int loop_list(int i, int list_size);
 };
 
 #endif 
