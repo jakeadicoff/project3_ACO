@@ -27,12 +27,10 @@ int main(int argc, char** argv) {
     
     cout << "******************************************" << endl;
     cout << " File name: " << problem_file_name << endl;
-//    if (ant_system == "EAS") {
-//        EAS eas_alg(populationSize, selectionType, crossoverType,
-//                  crossoverProbability, mutationProbability, generationNumber,
-//                  all_clauses, numVars );
-//        eas_alg.runEAS();
-//    }
+    if (ant_system == "EAS") {
+        EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, city_locations, elitism);
+        eas_alg.run_eas();
+    }
     if (ant_system == "ACS") {
         ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, tau_0, epsilon, q_0);
         acs_alg.runACS();

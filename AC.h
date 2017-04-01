@@ -21,7 +21,7 @@ struct Ant {
 
 class AntSystem {
 public:
-    AntSystem(double a,double b,double e,int colonySize, int numIterations, vector <vector <double > > cityLocations);
+    AntSystem(double a,double b,double e,int colonySize, int numIterations, vector <vector <double > > cityLocations, double tau_0);
     
     
 protected:
@@ -29,7 +29,7 @@ protected:
     vector<Ant> colony;
     vector<vector<double>> dists;
     vector<vector<double>> pheromones;
-    double alpha, beta, evap_rate;
+    double alpha, beta, evap_rate, tau_0;
     int colony_size, num_iterations, num_cities;
     
     void probabilistic_next_step(int ant_index);
@@ -38,6 +38,8 @@ protected:
     double lookup_dist(int i, int j);
     double lookup_pher(int i, int j);
     void clear_ants();
+    void init_phers();
+    double length_nn();
 };
 
 #endif

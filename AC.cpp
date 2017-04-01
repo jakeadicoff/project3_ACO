@@ -2,7 +2,7 @@
 
 
 
-AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterations, vector <vector <double > > cityLocations) {
+AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterations, vector <vector <double > > cityLocations, double t0) {
     this->alpha = a;
     this->beta = b;
     this->evap_rate = e;
@@ -16,6 +16,7 @@ AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterat
     this->dists = ds;
     this->pheromones = ps;
     this->best_ant = dummy_ant;
+    this->tau_0 = 1 / (colony_size * length_nn());
     init_dists_and_phers(cityLocations);
 }
 
@@ -34,6 +35,8 @@ void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
         dists.push_back(row1);
         pheromones.push_back(row2);
     }
+    
+    init_phers();
 }
 
 double AntSystem::euc_dist(vector <double> a, vector <double> b) {
@@ -87,6 +90,53 @@ void AntSystem::clear_ants() {
     vector<bool> true_vec(num_cities, true);
     colony[i].unvisited = true_vec;
   }
+}
+
+double AntSystem::length_nn() {
+    Ant nn_ant;
+    vector<bool> ones(num_cities, true);
+    nn_ant.unvisited = ones;
+    nn_ant.tour.push_back(0);
+    nn_ant.unvisited[0] = false;
+    int curr_city = 0;
+    
+    for(int i = 0; i < num_cities - 1; ++i) {
+        int nearest_city;
+        double dist_to_nearest_city = BIG_DOUBLE;
+        
+        for(int j = 0; j < num_cities; ++j) {
+            if(nn_ant.unvisited[j] == true) {
+                double path_dist = lookup_dist(curr_city, j);
+                
+                // if this city is the new nearest, update
+                if(path_dist < dist_to_nearest_city) {
+                    nearest_city = j;
+                    dist_to_nearest_city = path_dist;
+                }
+            }
+        }
+        // update the ant's tour and unvisited vector
+        nn_ant.unvisited[nearest_city] = false;
+        nn_ant.tour.push_back(nearest_city);
+        nn_ant.length += lookup_dist(nearest_city, curr_city);
+        
+        curr_city = nearest_city;
+    }
+    
+    // go home
+    nn_ant.tour.push_back(0);
+    nn_ant.length += dists[curr_city][0];
+    
+    return nn_ant.length;
+}
+
+// add initial pheromone to every path
+void AntSystem::init_phers() {
+    for(int i = 1; i < num_cities; ++i) {
+        for(int j = 0; j < i; ++j) {
+            pheromones[i][j] = tau_0;
+        }
+    }
 }
 
 

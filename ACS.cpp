@@ -4,29 +4,25 @@ ACS::ACS(double a, double b, double e, int colonySize, int numIterations, vector
     //AntSystem(a, b, e, colonySize, numIterations, cityLocations);
     this->epsilon = wearFactor;
     //this->tau_0 = t0;
-    this->tau_0 = 1 / (colony_size * length_nn());
     this->q_0 = q0;
     srand(time(NULL));
     
-    // give all paths epsilon * tau_0 pheromones
-    init_phers();
 }
 
 void ACS::runACS() {
+    
+    double start_time = clock();
+    
     for(int i = 0; i < num_iterations; ++i) {
         make_tours();
         wear_away();
         add_pheromone();
+        clear_ants();
     }
-}
-
-// add initial pheromone to every path
-void ACS::init_phers() {
-    for(int i = 1; i < num_cities; ++i) {
-        for(int j = 0; j < i; ++j) {
-            pheromones[i][j] = tau_0 * epsilon;
-        }
-    }
+    
+    double end_time = clock();
+    cout << "The shortest ACS path is " << best_ant.length << endl;
+    cout << "The shortest greedy path is " << length_nn() << endl;
 }
 
 
@@ -104,7 +100,6 @@ void ACS::exploitation_step(int ant_index) {
 void ACS::make_tours() {
     for(int i = 0; i < colony_size; ++i) {
         
-        colony[i].tour.clear();
         
         int starting_city = rand() % num_cities;
         colony[i].tour.push_back(starting_city);
@@ -122,45 +117,13 @@ void ACS::make_tours() {
         
         // make ant return to starting city
         colony[i].tour.push_back(starting_city);
-    }
-}
-
-double ACS::length_nn() {
-    Ant nn_ant;
-    vector<bool> ones(num_cities, true);
-    nn_ant.unvisited = ones;
-    nn_ant.tour.push_back(0);
-    nn_ant.unvisited[0] = false;
-    int curr_city = 0;
-    
-    for(int i = 0; i < num_cities - 1; ++i) {
-        int nearest_city;
-        double dist_to_nearest_city = BIG_DOUBLE;
+        colony[i].length += lookup_dist(starting_city, colony[i].tour.back());
         
-        for(int j = 0; j < num_cities; ++j) {
-            if(nn_ant.unvisited[j] == true) {
-                double path_dist = lookup_dist(curr_city, j);
-                
-                // if this city is the new nearest, update
-                if(path_dist < dist_to_nearest_city) {
-                    nearest_city = j;
-                    dist_to_nearest_city = path_dist;
-                }
-            }
+        // update best ant as necessary
+        if(colony[i].length < best_ant.length) {
+            best_ant = colony[i];
         }
-        // update the ant's tour and unvisited vector
-        nn_ant.unvisited[nearest_city] = false;
-        nn_ant.tour.push_back(nearest_city);
-        nn_ant.length += dists[curr_city][nearest_city];
-        
-        curr_city = nearest_city;
     }
-    
-    // go home
-    nn_ant.tour.push_back(0);
-    nn_ant.length += dists[curr_city][0];
-    
-    return nn_ant.length;
 }
 
 
