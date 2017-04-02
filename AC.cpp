@@ -24,6 +24,7 @@ AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterat
     
     init_dists_and_phers(cityLocations);
     this->tau_0 = 1 / (colony_size * length_nn());
+    init_phers();
     
 }
 void AntSystem::make_ants() {
@@ -47,9 +48,7 @@ void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
         dists.push_back(row1);
         pheromones.push_back(row2);
     }
-    
     clear_ants();
-    init_phers();
 }
 
 double AntSystem::euc_dist(vector <double> a, vector <double> b) {
@@ -77,7 +76,7 @@ void AntSystem::probabilistic_next_step(int ant_index) {
         double weight = 0;
         // if city is unvisited update weight accordingly
         if(colony[ant_index].unvisited[i]) {
-            weight = pow(lookup_pher(colony[ant_index].last(),i),alpha) +  pow(lookup_dist(colony[ant_index].last(),i),beta);
+            weight = pow(lookup_pher(colony[ant_index].last(),i),alpha) +  pow(1/(lookup_dist(colony[ant_index].last(),i)),beta);
         }
         // push back weight
         probability_vector.push_back(weight);
@@ -143,13 +142,11 @@ double AntSystem::length_nn() {
     return nn_ant.length;
 }
 
-// add initial pheromone to every path
 void AntSystem::init_phers() {
-    for(int i = 1; i < num_cities; ++i) {
+    for(int i = 0; i < num_cities; ++i) {
         for(int j = 0; j < i; ++j) {
             pheromones[i][j] = tau_0;
         }
     }
 }
-
 

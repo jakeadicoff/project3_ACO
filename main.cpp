@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     epsilon = 0.1;
     tau_0 = 1; //actually set this in constructor, so this is a placeholder
     q_0 = 0.9;
-    num_iterations = 100;
+    num_iterations = 1000;
     
     //process file and get pointer to vector of clauses
     vector <vector<double> > cities = readFile(problem_file_name);

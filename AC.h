@@ -39,9 +39,9 @@ protected:
     double lookup_dist(int i, int j);
     double lookup_pher(int i, int j);
     void clear_ants();
-    void init_phers();
     double length_nn();
     void make_ants();
+    void init_phers();
 };
 
 #endif
