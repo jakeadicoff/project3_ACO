@@ -98,7 +98,7 @@ void ACS::exploitation_step(int ant_index) {
             double path_dist = lookup_dist(curr_city, i);
             double path_pher = lookup_pher(curr_city, i);
             
-
+            
             double city_value = path_pher * pow(1 / path_dist, beta);
             //cout << city_value << endl;
             // if this city is the new best, update
@@ -120,13 +120,13 @@ void ACS::exploitation_step(int ant_index) {
 
 void ACS::make_tours() {
     for(int i = 0; i < colony_size; ++i) {
-    
+        
         
         int starting_city = rand() % num_cities;
-    
+        
         colony[i].tour.push_back(starting_city);
         colony[i].unvisited[starting_city] = false;
-    
+        
         for(int j = 0; j < num_cities - 1; ++j) {
             double step_prob = (double) rand() / RAND_MAX;
             
@@ -140,11 +140,11 @@ void ACS::make_tours() {
             }
             
         }
-
+        
         //cout << "mostly done tours" << endl;
         // make ant return to starting city
         
-    
+        
         //cout << colony[i].tour.back() << endl;
         colony[i].length += lookup_dist(starting_city, colony[i].tour.back());
         colony[i].tour.push_back(starting_city);
