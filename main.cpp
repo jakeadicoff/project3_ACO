@@ -9,10 +9,11 @@ int main(int argc, char** argv) {
   double alpha, beta, evap_rate, epsilon, tau_0, q_0, elitism;
   int colony_size, num_iterations, num_cities;
 
+  //@TODO: Make these into parameters
   colony_size = 20;
   alpha = 1;
   beta = 3;
-  evap_rate = 0.1;
+  evap_rate = 0.99;
   elitism = colony_size;
   epsilon = 0.1;
   tau_0 = 1; //actually set this in constructor, so this is a placeholder
@@ -37,20 +38,15 @@ int main(int argc, char** argv) {
   }
   cout << "******************************************" << endl;
   return 0;
-
-  //cities = readFile("a280.tsp");
-  //cout << cities[0][0] << cities [0][1] << endl;
-  //test_prob();
 }
 
+/** Reads a .tsp file */
 vector <vector<double> > readFile(string problem_file_name) {
   vector <vector<double> > vector_of_cities; //object to return
   ifstream problem_stream;    //file stream initialization
   string next_item_in_stream; //holds item that was just pulled from
                               //the file stream
   int big_int = 100000;       //for advancing filestream
-
-  cout << "Start of debug for parsing" << endl;
 
   //open file stream
   problem_stream.open(problem_file_name.c_str(), ios::in);
@@ -72,34 +68,26 @@ vector <vector<double> > readFile(string problem_file_name) {
     }
   }
 
-  //@TODO: Do these lines do anything? Can we delete it?
-  istringstream iss(line);
-  iss.ignore(big_int, 'N'); //jump to after 'NODE_COORD_SECTION' in same line
-
-  problem_stream >> next_item_in_stream; // line 1 of COORD section
-
+  //Loop through city coordinates
   while(problem_stream.peek()!=EOF) { //run until end of file
     vector <double> city; // Holds coordinates of the city
 
-    // skip city #
-    problem_stream >> next_item_in_stream;
+    problem_stream >> next_item_in_stream; //City ID value, discarded
 
     if(next_item_in_stream.substr(0, 3).compare("EOF") == 0) {
       break;
     }
 
-    for(int i = 0; i < 2; ++i) { //run until end of line
-      city.push_back(stod(next_item_in_stream));
+    for(int i = 0; i < 2; ++i) { //get city X,Y coordinates
       problem_stream >> next_item_in_stream;
+      city.push_back(stod(next_item_in_stream));
     }
+
     vector_of_cities.push_back(city);
     city.clear();
-    //problem_stream >> next_item_in_stream; //advance past "0"
   }
 
   cout << "Number of Cities: " << vector_of_cities.size()  << endl;
-  //return address
-  cout << "end of debug for file parsing" << endl;
 
   return vector_of_cities;
 }

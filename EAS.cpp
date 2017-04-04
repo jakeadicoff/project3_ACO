@@ -4,39 +4,29 @@ using namespace std;
 
 
 //EAS::EAS(double a, double b, double e, int colonySize, int numIterations, vector <vector < double > > cityLocations, double elitismFactor, double tau_0) {
-  //AntSystem(a,b,e,colonySize,numIterations,cityLocations, tau_0);
-  //this->elitism_factor = elitismFactor;
-  //cout << alpha << endl;
+//AntSystem(a,b,e,colonySize,numIterations,cityLocations, tau_0);
+//this->elitism_factor = elitismFactor;
+//cout << alpha << endl;
 //}
 
 
-
-
 void EAS::run_eas() {
-  cout << "1" << endl;
-  init_phers();
-  cout << "2" << endl;
+  init_phers(); //@TODO: unecessary? done in constructor?
   for(int i = 0; i < num_iterations; i++) {
-    cout << "3" << endl;
     clear_ants();
-    cout << "4" << endl;
     pick_initial_cities();
-    cout << "5" << endl;
+
     for(int j = 0; j < num_cities - 1; j++) {
       for(int k = 0; k < colony_size; k++) {
-        cout << "6" << endl;
-	probabilistic_next_step(k);  
-	cout << "7" << endl;
+	probabilistic_next_step(k);
       } // colony
     } // cities
-    cout << "8" << endl;
+
     add_last_cities();
-    cout << "9" << endl;
     update_best_ant();
-    cout << "10" << endl;
     pheromone_update();
-    cout << "11" << endl;
   } // iterations
+
   cout << best_ant.length << endl;
   for(int i = 0; i < num_cities; i++) {
     cout << best_ant.tour[i] << " ";
@@ -53,67 +43,91 @@ void EAS::pick_initial_cities() {
     colony[i].unvisited[random] = false;
   }
 }
+
 // add the final leg (back to initial city) to an ants tour
 void EAS::add_last_cities() {
   for(int i = 0; i < colony_size; i++) {
     update_ant(i,colony[i].tour[0]);
   }
 }
+
 // make all necessary updates to the Ant type when a new city is picked
 void EAS::update_ant(int ant_index, int city_index) {
   colony[ant_index].length += lookup_dist(colony[ant_index].last(),city_index);
   colony[ant_index].tour.push_back(city_index);
   colony[ant_index].unvisited[city_index] = false;
-  cout << "a" << endl;
-  
-  cout << "b" << endl;
+  //  cout << "a" << endl;
+
+  //  cout << "b" << endl;
 }
 
 void EAS::pheromone_update() {
   for(int i = 0; i < num_cities; i++) {
     for(int j = 0; j < i; j++) {
       pheromones[i][j] = (1-evap_rate)*pheromones[i][j];
-      pheromones[i][j] += pher_sum(i,j);
-      pheromones[i][j] += elitism_factor*in_bsf(i,j);
+      //      pheromones[i][j] += pher_sum(i,j);
+      //      pheromones[i][j] += elitism_factor*in_bsf(i,j);
     }
   }
+
+  regular_ant_contribution();
+  best_ant_contribution();
 }
 
-double EAS::in_bsf(int city_1, int city_2) {
-  for(int i = 0; i < num_cities; i++) {
-    if((best_ant.tour[i] == city_1 && best_ant.tour[loop_list(i+1,num_cities)] == city_2 ) || (best_ant.tour[i] == city_2 && best_ant.tour[loop_list(i+1,num_cities)] == city_1 )) { 
-      return 1/best_ant.length;
-    }
-  }
-  return 0;
-}
-
-double EAS::pher_sum(int city_1, int city_2) {
-  double sum = 0;
+void EAS::regular_ant_contribution() {
+  //for each ant
   for(int i = 0; i < colony_size; i++) {
+    Ant curr_ant = colony[i]; //not the fruit
+    //for each leg in its tour
     for(int j = 0; j < num_cities; j++) {
-      if((colony[i].tour[j] == city_1 && colony[i].tour[loop_list(j+1,num_cities)] == city_2) || (colony[i].tour[j] == city_2 && colony[i].tour[loop_list(j+1,num_cities)] == city_1)) {     
-	sum += 1/colony[i].length;
-	break;
+      int city_A = curr_ant.tour[i];
+      int city_B = curr_ant.tour[i+1];
+
+      //@TODO: Extract the following into a function? add_pheremone()?
+
+      //Ensures city_A > city_B
+      if(city_A < city_B) {
+	int tmp = city_A;
+	city_A = city_B;
+	city_B = tmp;
       }
+
+      pheromones[city_A][city_B] += 1/curr_ant.length;
     }
   }
-  return sum;
+}
+
+void EAS::best_ant_contribution() {
+  for(int i = 0; i < num_cities; i++) {
+    int city_A = best_ant.tour[i];
+    int city_B = best_ant.tour[i+1];
+
+    //@TODO: Extract the following into a function? add_pheremone()?
+    // Yes. Do that.
+
+    //Ensures city_A > city_B
+    if(city_A < city_B) {
+      int tmp = city_A;
+      city_A = city_B;
+      city_B = tmp;
+    }
+
+    pheromones[city_A][city_B] += elitism_factor*1/best_ant.length;
+  }
 }
 
 int EAS::loop_list(int i, int list_size) {
-  if(0 > i) {
-    return list_size - 1;
-  }
+  if(0 > i) return list_size - 1;
   return i%list_size;
 }
 
 void EAS::update_best_ant() {
   for(int i = 0; i < colony_size; i++) {
-    cout << "len: " << colony[i].length << endl;
+    //    cout << "len: " << colony[i].length << endl;
     if(colony[i].length < best_ant.length) {
-      
       best_ant = colony[i];
     }
   }
+
+  cout << "best ant len: " << best_ant.length << endl;
 }
