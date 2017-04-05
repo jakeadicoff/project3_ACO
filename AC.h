@@ -48,7 +48,7 @@ protected:
     void clear_ants();
     double length_nn();
     void make_ants();
-    void init_phers();
+    //    void init_phers();
 };
 
 #endif

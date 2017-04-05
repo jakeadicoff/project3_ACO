@@ -9,16 +9,6 @@ int main(int argc, char** argv) {
   double alpha, beta, evap_rate, epsilon, tau_0, q_0, elitism;
   int colony_size, num_iterations, num_cities;
 
-  //@TODO: Make these into parameters
-  colony_size = 20;
-  alpha = 1;
-  beta = 3;
-  evap_rate = 0.99;
-  elitism = colony_size;
-  epsilon = 0.1;
-  tau_0 = 1; //actually set this in constructor, so this is a placeholder
-  q_0 = 0.9;
-  num_iterations = 1000;
 
   //process file and get pointer to vector of cities
   vector <vector<double> > cities = readFile(problem_file_name);
@@ -27,11 +17,31 @@ int main(int argc, char** argv) {
   cout << "******************************************" << endl;
   cout << " File name: " << problem_file_name << endl;
   if (ant_system == "EAS") {
+    //@TODO: Make these into parameters
+    alpha = 1;
+    beta = 3;
+    evap_rate = 0.5;
+    colony_size = num_cities;
+    elitism = colony_size;
+    tau_0 = -4242424242424; //actually set this in constructor, so this is a placeholder
+    num_iterations = 1000;
+
     EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations,
 		cities, elitism, tau_0);
     eas_alg.run_eas();
   }
   else if (ant_system == "ACS") {
+    //@TODO: Make these into parameters
+    colony_size = num_cities;
+    alpha = 1;
+    beta = 3;
+    evap_rate = 0.99;
+    elitism = colony_size;
+    epsilon = 0.1;
+    tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
+    q_0 = 0.9;
+    num_iterations = 1000;
+
     ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations,
 		cities, tau_0, epsilon, q_0);
     acs_alg.runACS();

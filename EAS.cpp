@@ -11,7 +11,9 @@ using namespace std;
 
 
 void EAS::run_eas() {
-  init_phers(); //@TODO: unecessary? done in constructor?
+  this->tau_0 = (elitism_factor + colony_size)/(evap_rate * length_nn()); //input t0 in unecessary
+  init_phers();
+
   for(int i = 0; i < num_iterations; i++) {
     clear_ants();
     pick_initial_cities();
@@ -32,6 +34,12 @@ void EAS::run_eas() {
     cout << best_ant.tour[i] << " ";
   }
   cout << endl;
+}
+
+void EAS::init_phers() {
+  for(int i = 0; i < num_cities; ++i)
+    for(int j = 0; j < i; ++j)
+      pheromones[i][j] = tau_0;
 }
 
 
@@ -62,37 +70,26 @@ void EAS::update_ant(int ant_index, int city_index) {
 }
 
 void EAS::pheromone_update() {
-  for(int i = 0; i < num_cities; i++) {
-    for(int j = 0; j < i; j++) {
+  //evaporate all pheremones
+  for(int i = 0; i < num_cities; i++)
+    for(int j = 0; j < i; j++)
       pheromones[i][j] = (1-evap_rate)*pheromones[i][j];
-      //      pheromones[i][j] += pher_sum(i,j);
-      //      pheromones[i][j] += elitism_factor*in_bsf(i,j);
-    }
-  }
 
-  regular_ant_contribution();
-  best_ant_contribution();
+  regular_ant_contribution(); // add pheremones from every ant
+  best_ant_contribution();    // additional pheremone from best ant
 }
 
 void EAS::regular_ant_contribution() {
   //for each ant
   for(int i = 0; i < colony_size; i++) {
     Ant curr_ant = colony[i]; //not the fruit
+
     //for each leg in its tour
     for(int j = 0; j < num_cities; j++) {
       int city_A = curr_ant.tour[i];
       int city_B = curr_ant.tour[i+1];
 
-      //@TODO: Extract the following into a function? add_pheremone()?
-
-      //Ensures city_A > city_B
-      if(city_A < city_B) {
-	int tmp = city_A;
-	city_A = city_B;
-	city_B = tmp;
-      }
-
-      pheromones[city_A][city_B] += 1/curr_ant.length;
+      add_pheremone(city_A, city_B, 1/curr_ant.length);
     }
   }
 }
@@ -102,9 +99,11 @@ void EAS::best_ant_contribution() {
     int city_A = best_ant.tour[i];
     int city_B = best_ant.tour[i+1];
 
-    //@TODO: Extract the following into a function? add_pheremone()?
-    // Yes. Do that.
+    add_pheremone(city_A, city_B, elitism_factor*1/best_ant.length);
+  }
+}
 
+void EAS::add_pheremone(int city_A, int city_B, double quantity) {
     //Ensures city_A > city_B
     if(city_A < city_B) {
       int tmp = city_A;
@@ -112,14 +111,12 @@ void EAS::best_ant_contribution() {
       city_B = tmp;
     }
 
-    pheromones[city_A][city_B] += elitism_factor*1/best_ant.length;
-  }
+    pheromones[city_A][city_B] += quantity;
 }
-
-int EAS::loop_list(int i, int list_size) {
-  if(0 > i) return list_size - 1;
-  return i%list_size;
-}
+// int EAS::loop_list(int i, int list_size) {
+//   if(0 > i) return list_size - 1;
+//   return i%list_size;
+// }
 
 void EAS::update_best_ant() {
   for(int i = 0; i < colony_size; i++) {

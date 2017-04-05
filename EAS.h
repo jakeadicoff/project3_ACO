@@ -24,15 +24,17 @@ class EAS : public AntSystem {
  private:
   double elitism_factor;
 
+  void init_phers();
   void pick_initial_cities();
   void add_last_cities();
   void update_ant(int ant_index, int city_index);
   void pheromone_update();
-  double in_bsf(int city_1, int city_2);
+  //  double in_bsf(int city_1, int city_2);
   //  double pher_sum(int city_1, int city_2);
   void regular_ant_contribution();
   void best_ant_contribution();
-  int loop_list(int i, int list_size);
+  void add_pheremone(int cityA, int cityB, double quantity);
+  //  int loop_list(int i, int list_size);
   void update_best_ant();
 };
 

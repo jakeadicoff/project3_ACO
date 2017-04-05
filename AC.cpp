@@ -1,15 +1,18 @@
 #include "AC.h"
 
-AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterations, vector <vector <double > > cityLocations, double t0) {
-  this->alpha = a;
-  this->beta = b;
+AntSystem::AntSystem(double a, double b, double e,
+		     int colonySize, int numIterations,
+		     vector <vector <double > > cityLocations,
+		     double t0) {
+  this->alpha = a; //scaling factor
+  this->beta = b;  //scaling factor
   this->evap_rate = e;
   this->colony_size = colonySize;
   this->num_iterations = numIterations;
   this->num_cities = cityLocations.size();
 
-  vector<vector <double > > ps;
-  vector<vector <double > > ds;
+  vector<vector <double > > ps; //dummy vector - pheremones
+  vector<vector <double > > ds; //dummy vector - distances
   Ant dummy_ant;
   vector<Ant> dummy_colony(colony_size, dummy_ant);
 
@@ -21,9 +24,8 @@ AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterat
   this->best_ant = dummy_ant;
 
   init_dists_and_phers(cityLocations);
-  this->tau_0 = 1 / (colony_size * length_nn());
-
-  init_phers();
+  //  this->tau_0 = 1 / (colony_size * length_nn());
+  //  init_phers();
 }
 
 void AntSystem::make_ants() {
@@ -43,8 +45,6 @@ void AntSystem::make_ants() {
  * information, so when the lookup is executed, the LARGER index
  * always needs to come first.
  */
-
-//@TODO: Unecessary to set pheremone levels, since init_phers is called??
 void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
   vector <double> row1; //distance from A to B
   vector <double> row2; //pheremone on path AB
@@ -144,7 +144,8 @@ void AntSystem::probabilistic_next_step(int ant_index) {
 }
 
 /**
- * Selects the next city simply by taking the nearest unvisited city
+ * Selects the next city simply by taking the nearest unvisited city.
+ * Necessary to set initial pheremone levels, tau_0
  */
 double AntSystem::length_nn() {
   Ant nn_ant;
@@ -185,13 +186,4 @@ double AntSystem::length_nn() {
 
   return nn_ant.length;
 }
-
-void AntSystem::init_phers() {
-  for(int i = 0; i < num_cities; ++i) {
-    for(int j = 0; j < i; ++j) {
-      pheromones[i][j] = tau_0;
-    }
-  }
-}
-
 
