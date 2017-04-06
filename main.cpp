@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     epsilon = 0.1;
     tau_0 = 1; //actually set this in constructor, so this is a placeholder
     q_0 = 0.9;
-    num_iterations = 1000;
+    num_iterations = 100;
     
     //process file and get pointer to vector of clauses
     Cities tsp = readFile(problem_file_name);
@@ -30,10 +30,12 @@ int main(int argc, char** argv) {
     cout << " File name: " << problem_file_name << endl;
     if (ant_system == "EAS") {
         EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
+        
         eas_alg.run_eas();
     }
     else if (ant_system == "ACS") {
         ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
+        cout << "ACS constructed" << endl;
         acs_alg.runACS();
     }
     cout << "******************************************" << endl;
@@ -64,9 +66,10 @@ Cities readFile(string problem_file_name) {
     // WILL NEED FIXING IN FILES WITH MORE WRITING AT BEGINING. WILL IGNORE TO FIRST 'p'
     
     string line;
+    char curr_line[100];
+    
     while(problem_stream.peek()!=EOF) {
         problem_stream.ignore(big_int, 'E'); //jump to where line starts with p
-        char curr_line[100];
         problem_stream.getline(curr_line, 100);
         line = curr_line;
         
@@ -75,7 +78,16 @@ Cities readFile(string problem_file_name) {
         }
     }
     
-    string edge_weights = line.substr(17, 20);
+    int string_index = 0;
+    
+    for(int i = 0; i - line.length(); ++i) {
+        if(curr_line[i] == ':') {
+            string_index = i;
+        }
+    }
+    string_index = string_index + 2;
+    
+    string edge_weights = line.substr(string_index);
     cout << edge_weights << endl;
     
     if(edge_weights == "GEO") {

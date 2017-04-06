@@ -6,26 +6,27 @@ ACS::ACS(double a, double b, double e, int colonySize, int numIterations, Cities
     //this->tau_0 = t0;
     this->q_0 = q0;
     srand(time(NULL));
-    
-    cout << "ACS constructed" << endl;
 }
 
 void ACS::runACS() {
     
-    double start_time = clock();
     
+    double start_time = clock();
+   
     for(int i = 0; i < num_iterations; ++i) {
-        cout << 1;
+        
         make_tours();
-        cout << 2;
+     
         wear_away();
-        cout << 3;
+        
         add_pheromone();
-        cout << 4;
+        
         clear_ants();
-        cout << 5;
+        
+        cout << best_ant.length << endl;
     }
     
+    cout << "Made it out" << endl;
     double end_time = clock();
     
     cout << "The shortest ACS path is " << best_ant.length << endl;
