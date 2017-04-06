@@ -16,8 +16,8 @@ using namespace std;
 
 class EAS : public AntSystem {
  public:
- EAS(double a, double b, double e, int colonySize, int numIterations, vector <vector < double > > cityLocations, double elitismFactor, double tau_0) :
-  AntSystem(a,b,e,colonySize,numIterations,cityLocations, tau_0),
+ EAS(double a, double b, double e, int colonySize, int numIterations, Cities tsp, double elitismFactor, double tau_0) :
+  AntSystem(a,b,e,colonySize,numIterations,tsp, tau_0),
     elitism_factor(elitismFactor) {}
     
   void run_eas();

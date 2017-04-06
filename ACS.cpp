@@ -1,11 +1,12 @@
 #include "ACS.h"
 
-ACS::ACS(double a, double b, double e, int colonySize, int numIterations, vector<vector<double>> cityLocations, double t0, double wearFactor, double q0) : AntSystem(a, b, e, colonySize, numIterations, cityLocations, t0) {
+ACS::ACS(double a, double b, double e, int colonySize, int numIterations, Cities tsp, double t0, double wearFactor, double q0) : AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
     //AntSystem(a, b, e, colonySize, numIterations, cityLocations);
     this->epsilon = wearFactor;
     //this->tau_0 = t0;
     this->q_0 = q0;
     srand(time(NULL));
+    
     cout << "ACS constructed" << endl;
 }
 
@@ -14,13 +15,15 @@ void ACS::runACS() {
     double start_time = clock();
     
     for(int i = 0; i < num_iterations; ++i) {
+        cout << 1;
         make_tours();
-        
+        cout << 2;
         wear_away();
-        
+        cout << 3;
         add_pheromone();
-        
+        cout << 4;
         clear_ants();
+        cout << 5;
     }
     
     double end_time = clock();

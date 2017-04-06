@@ -4,12 +4,13 @@
 using namespace std;
 
 
+
 int main(int argc, char** argv) {
     string ant_system = argv[1];
     string problem_file_name = argv[2];
     
     double alpha, beta, evap_rate, epsilon, tau_0, q_0, elitism;
-    int colony_size, num_iterations, num_cities;
+    int colony_size, num_iterations;
     
     colony_size = 20;
     alpha = 1;
@@ -22,17 +23,17 @@ int main(int argc, char** argv) {
     num_iterations = 1000;
     
     //process file and get pointer to vector of clauses
-    vector <vector<double> > cities = readFile(problem_file_name);
-    num_cities = cities.size();
+    Cities tsp = readFile(problem_file_name);
+    //num_cities = tsp.positions.size();
     
     cout << "******************************************" << endl;
     cout << " File name: " << problem_file_name << endl;
     if (ant_system == "EAS") {
-        EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, elitism, tau_0);
+        EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
         eas_alg.run_eas();
     }
     else if (ant_system == "ACS") {
-        ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cities, tau_0, epsilon, q_0);
+        ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
         acs_alg.runACS();
     }
     cout << "******************************************" << endl;
@@ -43,7 +44,9 @@ int main(int argc, char** argv) {
     //test_prob();
 }
 
-vector <vector<double> > readFile(string problem_file_name) {
+Cities readFile(string problem_file_name) {
+    
+    Cities tsp;
     //item to return
     vector <vector<double> > vector_of_cities;
     //file stream initialization
@@ -62,6 +65,30 @@ vector <vector<double> > readFile(string problem_file_name) {
     
     string line;
     while(problem_stream.peek()!=EOF) {
+        problem_stream.ignore(big_int, 'E'); //jump to where line starts with p
+        char curr_line[100];
+        problem_stream.getline(curr_line, 100);
+        line = curr_line;
+        
+        if(line.substr(0, 4).compare("DGE_") == 0) {
+            break;
+        }
+    }
+    
+    string edge_weights = line.substr(17, 20);
+    cout << edge_weights << endl;
+    
+    if(edge_weights == "GEO") {
+        tsp.coordinate_system = GEOGRAPHIC;
+        cout << "GEO" << endl;
+    }
+    else {
+        tsp.coordinate_system = EUCLIDEAN;
+        cout << "EUC_2D" << endl;
+    }
+    
+    
+    while(problem_stream.peek()!=EOF) {
         problem_stream.ignore(big_int, 'N'); //jump to where line starts with p
         char curr_line[100];
         problem_stream.getline(curr_line, 100);
@@ -72,8 +99,8 @@ vector <vector<double> > readFile(string problem_file_name) {
         }
     }
     
-    istringstream iss(line);
-    iss.ignore(big_int, 'N'); //jump to after 'NODE_COORD_SECTION' in same line
+    //istringstream iss(line);
+    //iss.ignore(big_int, 'N'); //jump to after 'NODE_COORD_SECTION' in same line
     
     problem_stream >> next_item_in_stream; //to first literal in first clause
     
@@ -88,8 +115,10 @@ vector <vector<double> > readFile(string problem_file_name) {
         }
         for(int i = 0; i < 2; ++i) { //run until end of line
             city.push_back(stod(next_item_in_stream));
+            cout << next_item_in_stream << "\t";
             problem_stream >> next_item_in_stream;
         }
+        cout << endl;
         vector_of_cities.push_back(city);
         city.clear();
         //problem_stream >> next_item_in_stream; //advance past "0"
@@ -99,7 +128,9 @@ vector <vector<double> > readFile(string problem_file_name) {
     
     cout << "end of debug for file parsing" << endl;
     
-    return vector_of_cities;
+    tsp.positions = vector_of_cities;
+    
+    return tsp;
 }
 
 
