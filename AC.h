@@ -22,6 +22,7 @@ struct Ant {
     int last() {return tour[tour.size()-1];}
 };
 
+
 enum Coordinates {GEOGRAPHIC, EUCLIDEAN};
 
 struct Cities {
@@ -29,6 +30,13 @@ struct Cities {
     Coordinates coordinate_system;
 };
 
+struct Result {
+    double best_length;
+    double run_time;
+    double greedy_result;
+    vector<double> best_ant_every_10;
+    int iteration_of_best_ant;
+};
 
 class AntSystem {
 public:
@@ -37,6 +45,7 @@ public:
     
 protected:
     Coordinates coordinates;
+    Result results;
     Ant best_ant;
     vector<Ant> colony;
     vector<vector<double>> dists;

@@ -14,9 +14,11 @@ AntSystem::AntSystem(double a, double b, double e, int colonySize, int numIterat
     
     vector<vector <double > > ps;
     vector<vector <double > > ds;
+    Result data;
     Ant dummy_ant;
     vector<Ant> dummy_colony(colony_size, dummy_ant);
     this->colony = dummy_colony;
+    this->results = data;
     dummy_ant.length = BIG_DOUBLE;
     
     this->dists = ds;

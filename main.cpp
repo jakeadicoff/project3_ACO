@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     epsilon = 0.1;
     tau_0 = 1; //actually set this in constructor, so this is a placeholder
     q_0 = 0.9;
-    num_iterations = 100;
+    num_iterations = 20;
     
     //process file and get pointer to vector of clauses
     Cities tsp = readFile(problem_file_name);
@@ -30,13 +30,12 @@ int main(int argc, char** argv) {
     cout << " File name: " << problem_file_name << endl;
     if (ant_system == "EAS") {
         EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
-        
-        eas_alg.run_eas();
+        Result results = eas_alg.run_eas();
     }
     else if (ant_system == "ACS") {
         ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
         cout << "ACS constructed" << endl;
-        acs_alg.runACS();
+        Result results = acs_alg.runACS();
     }
     cout << "******************************************" << endl;
     return 0;

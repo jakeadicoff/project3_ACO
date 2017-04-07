@@ -20,7 +20,7 @@ using namespace std;
 class ACS : public AntSystem {
     
 public:
-    void runACS();
+    Result runACS();
     ACS(double a, double b, double e, int colonySize, int numIterations, Cities tsp, double t0, double wearFactor, double q0);
     
     

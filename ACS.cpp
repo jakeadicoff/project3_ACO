@@ -8,30 +8,37 @@ ACS::ACS(double a, double b, double e, int colonySize, int numIterations, Cities
     srand(time(NULL));
 }
 
-void ACS::runACS() {
-    
-    
+Result ACS::runACS() {
     double start_time = clock();
-   
+    double curr_best = BIG_DOUBLE;
+    
     for(int i = 0; i < num_iterations; ++i) {
-        
         make_tours();
-     
         wear_away();
-        
         add_pheromone();
-        
         clear_ants();
-        
-        cout << best_ant.length << endl;
+        if(i % 10 == 0) {
+            results.best_ant_every_10.push_back(best_ant.length);
+            cout << "Iteration " << i << ": " << best_ant.length;
+            cout << endl;
+        }
+        if(best_ant.length < curr_best) {
+            curr_best = best_ant.length;
+            results.iteration_of_best_ant = i;
+        }
     }
     
-    cout << "Made it out" << endl;
     double end_time = clock();
     
+    results.greedy_result = length_nn();
+    results.best_length = best_ant.length;
+    results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
+    
     cout << "The shortest ACS path is " << best_ant.length << endl;
-    cout << "The shortest greedy path is " << length_nn() << endl;
+    cout << "The shortest greedy path is " << results.greedy_result << endl;
     cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
+    
+    return results;
 }
 
 
