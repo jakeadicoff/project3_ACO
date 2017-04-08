@@ -12,6 +12,6 @@
 #include <stdio.h>
 #include <sstream>
 
-vector <vector<double> > readFile(string problem_file_name);
+Cities readFile(string problem_file_name);
 
 #endif

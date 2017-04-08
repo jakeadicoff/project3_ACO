@@ -20,11 +20,10 @@ using namespace std;
 class ACS : public AntSystem {
 
 public:
-    void runACS();
-    ACS(double a, double b, double e, int colonySize,
-	int numIterations, vector<vector<double>> cityLocations,
-	double t0, double wearFactor, double q0);
-
+  Result runACS();
+  ACS(double a, double b, double e, int colonySize,
+      int numIterations, Cities tsp, double t0,
+      double wearFactor, double q0);
 
 private:
   void initialize_pheremones();

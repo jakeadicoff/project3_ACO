@@ -1,15 +1,13 @@
 #include "ACS.h"
 
-ACS::ACS(double a, double b, double e, int colonySize,
-	 int numIterations, vector<vector<double>> cityLocations,
-	 double t0, double wearFactor, double q0) :
-  AntSystem(a, b, e, colonySize, numIterations, cityLocations, t0){
+ACS::ACS(double a, double b, double e, int colonySize, int numIterations,
+	 Cities tsp, double t0, double wearFactor, double q0):
+  AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
     this->epsilon = wearFactor;
     this->q_0 = q0;
     this->tau_0 = 1/(colonySize * length_nn()); //input t0 in unecessary
     init_phers();
     srand(time(NULL));
-    cout << "ACS constructed" << endl;
 }
 
 void ACS::init_phers() {
@@ -18,24 +16,38 @@ void ACS::init_phers() {
       pheromones[i][j] = tau_0;
 }
 
-void ACS::runACS() {
+Result ACS::runACS() {
     double start_time = clock();
+    double curr_best = MAX_DOUBLE;
 
     for(int i = 0; i < num_iterations; ++i) {
         make_tours();
-
         wear_away();
-
         add_pheromone();
 
         clear_ants();
+        if(i % 10 == 0) {
+            results.best_ant_every_10.push_back(best_ant.length);
+            cout << "Iteration " << i << ": " << best_ant.length;
+            cout << endl;
+        }
+        if(best_ant.length < curr_best) {
+            curr_best = best_ant.length;
+            results.iteration_of_best_ant = i;
+        }
     }
 
     double end_time = clock();
 
+    results.greedy_result = length_nn();
+    results.best_length = best_ant.length;
+    results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
+
     cout << "The shortest ACS path is " << best_ant.length << endl;
-    cout << "The shortest greedy path is " << length_nn() << endl;
+    cout << "The shortest greedy path is " << results.greedy_result << endl;
     cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
+
+    return results;
 }
 
 
@@ -162,10 +174,3 @@ void ACS::make_tours() {
         }
     }
 }
-
-
-
-
-
-
-

@@ -10,10 +10,12 @@
 #include <random>
 #include <limits>
 
+
+
 using namespace std;
 
-//@TODO: Replaces all occurences of BIG_DOUBLE with MAX_DOUBLE
 const double MAX_DOUBLE = numeric_limits<float>::max();
+const double pi = 3.14159265358979;
 
 struct Ant {
   vector<int> tour;       //ordered list of the ant's tour
@@ -22,18 +24,31 @@ struct Ant {
   int last() {return tour[tour.size()-1];} // last city in tour
 };
 
-/**
- * Contains all the variables and functions that BOTH elitist and
- * colony systems require.
- */
+enum Coordinates {GEOGRAPHIC, EUCLIDEAN};
+
+struct Cities {
+    vector<vector<double>> positions;
+    Coordinates coordinate_system;
+};
+
+struct Result {
+    double best_length;
+    double run_time;
+    double greedy_result;
+    vector<double> best_ant_every_10;
+    int iteration_of_best_ant;
+};
+
 class AntSystem {
 public:
-    AntSystem(double a,double b,double e,
-	      int colonySize, int numIterations,
-	      vector <vector <double > > cityLocations, double tau_0);
+    AntSystem(double a,double b,double e, int colonySize,
+	      int numIterations, Cities tsp, double tau_0);
 
 protected:
+    Coordinates coordinates;
+    Result results;
     Ant best_ant; //just such a cool ant
+
     vector<Ant> colony;
     vector<vector<double>> dists;
     vector<vector<double>> pheromones;
@@ -49,6 +64,9 @@ protected:
     double length_nn();
     void make_ants();
     //    void init_phers();
+    double rad_to_deg(double rad);
+    double deg_to_rad(double deg);
+    double geo_dist(vector<double> a, vector<double> b);
 };
 
 #endif
