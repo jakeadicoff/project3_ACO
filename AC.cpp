@@ -1,6 +1,6 @@
 #include "AC.h"
 
-AntSystem(double a,double b,double e, int colonySize,
+AntSystem::AntSystem(double a, double b,double e, int colonySize,
 	  int numIterations, Cities tsp, double tau_0) {
   this->alpha = a; //scaling factor
   this->beta = b;  //scaling factor

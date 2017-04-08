@@ -50,49 +50,106 @@ int main(int argc, char** argv) {
   return 0;
 }
 
-/** Reads a .tsp file */
-vector <vector<double> > readFile(string problem_file_name) {
-  vector <vector<double> > vector_of_cities; //object to return
-  ifstream problem_stream;    //file stream initialization
-  string next_item_in_stream; //holds item that was just pulled from
-                              //the file stream
-  int big_int = 100000;       //for advancing filestream
+Cities readFile(string problem_file_name) {
 
-  //open file stream
+  Cities tsp;
+  //item to return
+  vector <vector<double> > vector_of_cities;
+  //file stream initialization
+  ifstream problem_stream;
+  string num_clauses, num_literals;
+  //hold iteam that was just pulled from the file stream
+  string next_item_in_stream;
+  //for advancing filestream
+  int big_int = 100000;
+  cout << "Start of debug for parsing" << endl;
   problem_stream.open(problem_file_name.c_str(), ios::in);
-  if(!problem_stream.good()) {
+  if(!problem_stream.good()) { //open file stream
     cout << "Error: not able to open file" << endl;
   }
+  // WILL NEED FIXING IN FILES WITH MORE WRITING AT BEGINING. WILL IGNORE TO FIRST 'p'
 
   string line;
-  //Keep ignoring until the "NODE_COORD_SECTION" line
+  char curr_line[100];
+
   while(problem_stream.peek()!=EOF) {
-    problem_stream.ignore(big_int, 'N');
+    problem_stream.ignore(big_int, 'E'); //jump to where line starts with p
+    problem_stream.getline(curr_line, 100);
+    line = curr_line;
+
+    if(line.substr(0, 4).compare("DGE_") == 0) {
+      break;
+    }
+  }
+
+  int string_index = 0;
+
+  for(int i = 0; i - line.length(); ++i) {
+    if(curr_line[i] == ':') {
+      string_index = i;
+    }
+  }
+  string_index = string_index + 2;
+
+  string edge_weights = line.substr(string_index);
+  cout << edge_weights << endl;
+
+  if(edge_weights == "GEO") {
+    tsp.coordinate_system = GEOGRAPHIC;
+    cout << "GEO" << endl;
+  }
+  else {
+    tsp.coordinate_system = EUCLIDEAN;
+    cout << "EUC_2D" << endl;
+  }
+
+
+  while(problem_stream.peek()!=EOF) {
+    problem_stream.ignore(big_int, 'N'); //jump to where line starts with p
     char curr_line[100];
     problem_stream.getline(curr_line, 100);
     line = curr_line;
 
-    //break once we find the appropriate line
     if(line.substr(0, 4).compare("ODE_") == 0) {
       break;
     }
   }
 
-  //Loop through city coordinates
-  while(problem_stream.peek()!=EOF) { //run until end of file
-    vector <double> city; // Holds coordinates of the city
+  //istringstream iss(line);
+  //iss.ignore(big_int, 'N'); //jump to after 'NODE_COORD_SECTION' in same line
 
-    problem_stream >> next_item_in_stream; //City ID value, discarded
+  problem_stream >> next_item_in_stream; //to first literal in first clause
+
+  while(problem_stream.peek()!=EOF) { //run until end of file
+    vector <double> city; //make clause vectore to hold literals
+
+    // skip city #
+    problem_stream >> next_item_in_stream;
 
     if(next_item_in_stream.substr(0, 3).compare("EOF") == 0) {
       break;
     }
-
-    for(int i = 0; i < 2; ++i) { //get city X,Y coordinates
-      problem_stream >> next_item_in_stream;
+    for(int i = 0; i < 2; ++i) { //run until end of line
       city.push_back(stod(next_item_in_stream));
+      cout << next_item_in_stream << "\t";
+      problem_stream >> next_item_in_stream;
     }
-=======
+    cout << endl;
+    vector_of_cities.push_back(city);
+    city.clear();
+    //problem_stream >> next_item_in_stream; //advance past "0"
+  }
+  cout << "Number of Cities: " << vector_of_cities.size()  << endl;
+  //return address
+
+  cout << "end of debug for file parsing" << endl;
+
+  tsp.positions = vector_of_cities;
+
+  return tsp;
+}
+/*
+
 Cities readFile(string problem_file_name) {
 
   Cities tsp; //object to return
@@ -109,11 +166,11 @@ Cities readFile(string problem_file_name) {
   }
 
   string line;
+  char curr_line[100];
 
   //look for coordinate system -- Geographic or Euclidean
   while(problem_stream.peek()!=EOF) {
     problem_stream.ignore(big_int, 'E');
-    char curr_line[100];
     problem_stream.getline(curr_line, 100);
     line = curr_line;
 
@@ -149,7 +206,6 @@ Cities readFile(string problem_file_name) {
   //Now, keep ignoring until the "NODE_COORD_SECTION" line (city coordinates)
   while(problem_stream.peek()!=EOF) {
     problem_stream.ignore(big_int, 'N');
-    char curr_line[100];
     problem_stream.getline(curr_line, 100);
     line = curr_line;
 
@@ -163,6 +219,7 @@ Cities readFile(string problem_file_name) {
   while(problem_stream.peek()!=EOF) { //run until end of file
     vector <double> city; // Holds coordinates of the city
 
+    problem_stream >> next_item_in_stream; //City ID value, discarded
     problem_stream >> next_item_in_stream; //City ID value, discarded
 
     if(next_item_in_stream.substr(0, 3).compare("EOF") == 0) {
@@ -187,3 +244,4 @@ Cities readFile(string problem_file_name) {
 
     return tsp;
 }
+*/

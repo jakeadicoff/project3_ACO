@@ -33,6 +33,7 @@ class EAS : public AntSystem {
   void regular_ant_contribution();
   void best_ant_contribution();
   void add_pheremone(int cityA, int cityB, double quantity);
+  void update_best_ant();
 
 };
 

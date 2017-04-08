@@ -86,8 +86,6 @@ void EAS::add_last_cities() {
 
 // make all necessary updates to the Ant type when a new city is picked
 void EAS::update_ant(int ant_index, int city_index) {
-  <<<<<<< HEAD
-
   colony[ant_index].length += lookup_dist(colony[ant_index].last(),city_index);
   colony[ant_index].tour.push_back(city_index);
   colony[ant_index].unvisited[city_index] = false;
