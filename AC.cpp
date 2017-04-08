@@ -166,8 +166,11 @@ void AntSystem::probabilistic_next_step(int ant_index) {
     double weight = 0;
     // if city is unvisited update, selection weight to be NON ZERO
     if(colony[ant_index].unvisited[i]) {
-      weight = pow(lookup_pher(colony[ant_index].last(),i),alpha) +
-	pow(1/(lookup_dist(colony[ant_index].last(),i)),beta);
+        double pher = pow(lookup_pher(colony[ant_index].last(),i),alpha);
+        double dist = pow(1/(lookup_dist(colony[ant_index].last(),i)),beta);
+        cout << "Dist: " << dist << ", Pher: " << pher << endl;
+        weight = pher * dist;
+        cout << weight << endl;
     }
     probability_vector.push_back(weight);
   }

@@ -33,7 +33,7 @@ Result EAS::run_eas() {
 
         if(i % 10 == 0) {
             results.best_ant_every_10.push_back(best_ant.length);
-            cout << "Iteration " << i << ": " << best_ant.length;
+            //cout << "Iteration " << i << ": " << best_ant.length;
             cout << endl;
         }
         if(best_ant.length < curr_best) {
