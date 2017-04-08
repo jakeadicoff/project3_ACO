@@ -1,21 +1,30 @@
 #include "ACS.h"
 
-ACS::ACS(double a, double b, double e, int colonySize, int numIterations, Cities tsp, double t0, double wearFactor, double q0) : AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
-    //AntSystem(a, b, e, colonySize, numIterations, cityLocations);
+ACS::ACS(double a, double b, double e, int colonySize, int numIterations,
+	 Cities tsp, double t0, double wearFactor, double q0):
+  AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
     this->epsilon = wearFactor;
-    //this->tau_0 = t0;
     this->q_0 = q0;
+    this->tau_0 = 1/(colonySize * length_nn()); //input t0 in unecessary
+    init_phers();
     srand(time(NULL));
+}
+
+void ACS::init_phers() {
+  for(int i = 0; i < num_cities; ++i)
+    for(int j = 0; j < i; ++j)
+      pheromones[i][j] = tau_0;
 }
 
 Result ACS::runACS() {
     double start_time = clock();
-    double curr_best = BIG_DOUBLE;
-    
+    double curr_best = MAX_DOUBLE;
+
     for(int i = 0; i < num_iterations; ++i) {
         make_tours();
         wear_away();
         add_pheromone();
+
         clear_ants();
         if(i % 10 == 0) {
             results.best_ant_every_10.push_back(best_ant.length);
@@ -27,31 +36,31 @@ Result ACS::runACS() {
             results.iteration_of_best_ant = i;
         }
     }
-    
+
     double end_time = clock();
-    
+
     results.greedy_result = length_nn();
     results.best_length = best_ant.length;
     results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
-    
+
     cout << "The shortest ACS path is " << best_ant.length << endl;
     cout << "The shortest greedy path is " << results.greedy_result << endl;
     cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
-    
+
     return results;
 }
 
 
 // add pheromone to every ant path on bsf and evaporate from all
 void ACS::add_pheromone() {
-    
+
     //evaporate pheromone
     for(int i = 1; i < num_cities; ++i) {
         for(int j = 0; j < i; ++j) {
             pheromones[i][j] = (1 - evap_rate) * pheromones[i][j];
         }
     }
-    
+
     // add pheromone to paths on bsf
     for(int j = 0; j < num_cities; ++j) {
         int start_city = best_ant.tour[j];
@@ -99,17 +108,17 @@ void ACS::wear_away() {
 
 // take the exploitation step that maximizes pheromone/distance
 void ACS::exploitation_step(int ant_index) {
-    
+
     int max_city;
     double max_city_value = -1;
     int curr_city = colony[ant_index].tour.back();
-    
+
     for(int i = 0; i < num_cities; ++i) {
         if(colony[ant_index].unvisited[i] == true) {
             double path_dist = lookup_dist(curr_city, i);
             double path_pher = lookup_pher(curr_city, i);
-            
-            
+
+
             double city_value = path_pher * pow(1 / path_dist, beta);
             //cout << city_value << endl;
             // if this city is the new best, update
@@ -119,7 +128,7 @@ void ACS::exploitation_step(int ant_index) {
             }
         }
     }
-    
+
     // update the ant's tour and unvisited vector
     //cout << max_city << endl;
     colony[ant_index].unvisited[max_city] = false;
@@ -131,16 +140,16 @@ void ACS::exploitation_step(int ant_index) {
 
 void ACS::make_tours() {
     for(int i = 0; i < colony_size; ++i) {
-        
-        
+
+
         int starting_city = rand() % num_cities;
-        
+
         colony[i].tour.push_back(starting_city);
         colony[i].unvisited[starting_city] = false;
-        
+
         for(int j = 0; j < num_cities - 1; ++j) {
             double step_prob = (double) rand() / RAND_MAX;
-            
+
             if(step_prob < q_0) {
                 //cout << "Exploitation" << endl;
                 exploitation_step(i);
@@ -149,13 +158,13 @@ void ACS::make_tours() {
                 //cout << "Probabilistic" << endl;
                 probabilistic_next_step(i);
             }
-            
+
         }
-        
+
         //cout << "mostly done tours" << endl;
         // make ant return to starting city
-        
-        
+
+
         //cout << colony[i].tour.back() << endl;
         colony[i].length += lookup_dist(starting_city, colony[i].tour.back());
         colony[i].tour.push_back(starting_city);
@@ -165,10 +174,3 @@ void ACS::make_tours() {
         }
     }
 }
-
-
-
-
-
-
-

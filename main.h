@@ -12,11 +12,6 @@
 #include <stdio.h>
 #include <sstream>
 
-
-
-using namespace std;
-
 Cities readFile(string problem_file_name);
-void test_prob();
 
 #endif

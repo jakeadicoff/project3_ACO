@@ -18,24 +18,23 @@ using namespace std;
 
 
 class ACS : public AntSystem {
-    
+
 public:
-    Result runACS();
-    ACS(double a, double b, double e, int colonySize, int numIterations, Cities tsp, double t0, double wearFactor, double q0);
-    
-    
+  Result runACS();
+  ACS(double a, double b, double e, int colonySize,
+      int numIterations, Cities tsp, double t0,
+      double wearFactor, double q0);
+
 private:
-    void pheromone_update();
-    void exploitation_step(int ant_index);
-    void make_tours();
-    void wear_away();
-    void add_pheromone();
-    void init_phers();
-    
-    double epsilon, tau_0, q_0;
-    
-    
-    
+  void initialize_pheremones();
+  void pheromone_update();
+  void exploitation_step(int ant_index);
+  void make_tours();
+  void wear_away();
+  void add_pheromone();
+  void init_phers();
+
+  double epsilon, tau_0, q_0;
 };
 
 #endif
