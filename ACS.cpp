@@ -1,5 +1,5 @@
 #include "ACS.h"
-
+#include <algorithm>
 ACS::ACS(double a, double b, double e, int colonySize, int numIterations,
          Cities tsp, double t0, double wearFactor, double q0):
 AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
@@ -52,7 +52,7 @@ Result ACS::runACS() {
     cout << "The shortest ACS path is " << best_ant.length << endl;
     cout << "The shortest greedy path is " << results.greedy_result << endl;
     cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
-    
+
     return results;
 }
 

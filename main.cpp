@@ -13,40 +13,91 @@ int main(int argc, char** argv) {
   //process file and get pointer to vector of cities
   Cities tsp = readFile(problem_file_name);
   num_cities = tsp.positions.size();
+  string input;
+  cout << "run all tests? (y / n)" << endl;
+  cin >> input;
+  if(input == "n") {
 
-  cout << "******************************************" << endl;
-  cout << " File name: " << problem_file_name << endl;
-  if (ant_system == "EAS") {
-    //@TODO: Make these into parameters
-    alpha = 1;
-    beta = 3;
-    evap_rate = 0.5;
-    colony_size = num_cities;
-    elitism = colony_size;
-    tau_0 = -4242424242424; //actually set this in constructor, so this is a placeholder
-    num_iterations = 1000;
-
-    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
-    Result results = eas_alg.run_eas();
+    cout << "******************************************" << endl;
+    cout << " File name: " << problem_file_name << endl;
+    if (ant_system == "EAS") {
+      //@TODO: Make these into parameters
+      alpha = 1;
+      beta = 3;
+      evap_rate = 0.5;
+      colony_size = num_cities;
+      elitism = colony_size;
+      tau_0 = -4242424242424; //actually set this in constructor, so this is a placeholder
+      num_iterations = 10;
+      
+      EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
+      Result results = eas_alg.run_eas();
+    }
+    else if (ant_system == "ACS") {
+      //@TODO: Make these into parameters
+      colony_size = num_cities;
+      alpha = 1;
+      beta = 3;
+      evap_rate = 0.99;
+      epsilon = 0.1;
+      tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
+      q_0 = 0.9;
+      num_iterations = 10;
+      
+      ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
+      cout << "ACS constructed" << endl;
+      Result results = acs_alg.runACS();
+    }
+    cout << "******************************************" << endl;
   }
-  else if (ant_system == "ACS") {
-    //@TODO: Make these into parameters
-    colony_size = num_cities;
-    alpha = 1;
-    beta = 3;
-    evap_rate = 0.99;
-    elitism = colony_size;
-    epsilon = 0.1;
+  else {
+    string acs_filename, eas_filename;
+    ofstream eas_output_file, acs_output_file;
+    cout << "name eas file (with .csv): " << endl;
+    cin >> eas_filename;
+    cout << "name acs file (with .csv): " << endl;
+    cin >> acs_filename;
+    // header for output files
+    string eas_output_string = "EAS\nbeta,evap,elitism,avg time,avg dist,avg iter\n";
+    string acs_output_string = "ACS\nbeta,evap,q_0,avg time,avg dist,avg iter\n";
+    // general params for both algs
     tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
-    q_0 = 0.9;
-    num_iterations = 10;
+    num_iterations = 300; // ????
+    alpha = 1;
+    // specific for EAS
+    colony_size = 10;
+    
+    for(int i = 0; i < 3; i++) { // vary beta
+      for(int j = 0; j < 3; j++) { // vary evap
+	for(int k = 0; k < 3; k++) { // vary elitism
+	  // set params for testing     
+	  beta = i*3+3;
+	  evap_rate = double(j)*2/10.0 + 0.3; // test values .3, .5, .7
+	  elitism = (k+1)*(colony_size)/2;
+	  double avg_dist = 0;
+	  double avg_time = 0;
+	  int avg_iter = 0;
+	  for(int l = 0; l < 10; l++) { // 10 tests
+	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
+	    Result result = eas_alg.run_eas();
+	    avg_dist += result.best_length;
+	    avg_time += result.run_time;
+	    avg_iter += result.iteration_of_best_ant;
+	  }//10 tests
+	  avg_dist = avg_dist/10;
+	  avg_time = avg_time/10;
+	  avg_iter = avg_iter/10;
+	  eas_output_string = eas_output_string + to_string(beta) + "," + to_string(evap_rate) + "," +
+	    to_string(elitism) + "," + to_string(avg_time) + "," + to_string(avg_dist) + "," +
+	    to_string(avg_iter) + "\n";
+	}// vary elitism
+      } // vary evap
+    } // vary beta
+    eas_output_file.open(eas_filename);
+    eas_output_file << eas_output_string;
+    eas_output_file.close();
+  }// end of else
 
-    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
-    cout << "ACS constructed" << endl;
-    Result results = acs_alg.runACS();
-  }
-
-  cout << "******************************************" << endl;
   return 0;
 }
 
