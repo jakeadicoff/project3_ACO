@@ -9,7 +9,7 @@ AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
     init_phers();
     //cout << lookup_pher(4, 10) << endl;
     //cout << tau_0 << endl;
-    srand(time(NULL));
+    
 }
 
 void ACS::init_phers() {

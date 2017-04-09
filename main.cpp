@@ -2,6 +2,8 @@
 
 using namespace std;
 
+
+
 int main(int argc, char** argv) {
   string ant_system = argv[1];
   string problem_file_name = argv[2];
@@ -24,7 +26,7 @@ int main(int argc, char** argv) {
     colony_size = num_cities;
     elitism = colony_size;
     tau_0 = -4242424242424; //actually set this in constructor, so this is a placeholder
-    num_iterations = 1000;
+    num_iterations = 10;
 
     EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
     Result results = eas_alg.run_eas();

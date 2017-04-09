@@ -17,6 +17,8 @@ Result EAS::run_eas() {
     this->tau_0 = (elitism_factor + colony_size)/(evap_rate * length_nn()); //input t0 in unecessary
     init_phers();
 
+    cout << lookup_pher(4, 10) << endl;
+    cout << tau_0 << endl;
     for(int i = 0; i < num_iterations; i++) {
             clear_ants();
 
@@ -39,6 +41,10 @@ Result EAS::run_eas() {
         if(best_ant.length < curr_best) {
             curr_best = best_ant.length;
             results.iteration_of_best_ant = i;
+            for(int j = 0; j < best_ant.tour.size(); ++j) {
+                cout << best_ant.tour[j] << ", ";
+            }
+            cout << endl;
         }
 
     } // iterations
@@ -53,7 +59,7 @@ Result EAS::run_eas() {
     results.best_length = best_ant.length;
     results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
 
-    cout << "The shortest ACS path is " << best_ant.length << endl;
+    cout << "The shortest EAS path is " << best_ant.length << endl;
     cout << "The shortest greedy path is " << results.greedy_result << endl;
     cout << "Runtime: " << results.run_time << endl;
 
@@ -72,6 +78,9 @@ void EAS::pick_initial_cities() {
 
     for(int i = 0; i < colony_size; i++) {
         int random = rand() % num_cities;
+        if(i == 0) {
+            cout << random << endl;
+        }
         colony[i].tour.push_back(random);
         colony[i].unvisited[random] = false;
     }
@@ -147,5 +156,5 @@ void EAS::update_best_ant() {
         }
     }
 
-  cout << "best ant len: " << best_ant.length << endl;
+  //cout << "best ant len: " << best_ant.length << endl;
 }
