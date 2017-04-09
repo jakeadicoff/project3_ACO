@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
     epsilon = 0.1;
     tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
     q_0 = 0.9;
-    num_iterations = 1000;
+    num_iterations = 10;
 
     ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
     cout << "ACS constructed" << endl;

@@ -168,9 +168,9 @@ void AntSystem::probabilistic_next_step(int ant_index) {
     if(colony[ant_index].unvisited[i]) {
         double pher = pow(lookup_pher(colony[ant_index].last(),i),alpha);
         double dist = pow(1/(lookup_dist(colony[ant_index].last(),i)),beta);
-        cout << "Dist: " << dist << ", Pher: " << pher << endl;
+        //cout << "Dist: " << dist << ", Pher: " << pher << endl;
         weight = pher * dist;
-        cout << weight << endl;
+        //cout << weight << endl;
     }
     probability_vector.push_back(weight);
   }
