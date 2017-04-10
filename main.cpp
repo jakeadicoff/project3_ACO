@@ -52,7 +52,8 @@ int main(int argc, char** argv) {
   }
   else {
     string acs_filename, eas_filename;
-    ofstream eas_output_file, acs_output_file;
+    ofstream eas_output_file;
+    ofstream acs_output_file;
     cout << "name eas file (with .csv): " << endl;
     cin >> eas_filename;
     cout << "name acs file (with .csv): " << endl;
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
     string acs_output_string = "ACS\nbeta,evap,q_0,avg time,avg dist,avg iter\n";
     // general params for both algs
     tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
-    num_iterations = 300; // ????
+    num_iterations = 100; // ????
     alpha = 1;
     // specific for EAS
     colony_size = 10;
@@ -76,13 +77,13 @@ int main(int argc, char** argv) {
 	  elitism = (k+1)*(colony_size)/2;
 	  double avg_dist = 0;
 	  double avg_time = 0;
-	  int avg_iter = 0;
+	  double avg_iter = 0;
 	  for(int l = 0; l < 10; l++) { // 10 tests
 	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
 	    Result result = eas_alg.run_eas();
 	    avg_dist += result.best_length;
 	    avg_time += result.run_time;
-	    avg_iter += result.iteration_of_best_ant;
+	    avg_iter += double(result.iteration_of_best_ant);
 	  }//10 tests
 	  avg_dist = avg_dist/10;
 	  avg_time = avg_time/10;
@@ -96,6 +97,39 @@ int main(int argc, char** argv) {
     eas_output_file.open(eas_filename);
     eas_output_file << eas_output_string;
     eas_output_file.close();
+
+    // static parameters
+    epsilon = 0.1;
+    colony_size = 20;
+    // tests
+    for(int i = 0; i < 3; i++) {
+      for(int j = 0; j < 3; j++) {
+	for(int k = 0; k < 3; k++) {
+	  beta = i*3+3;
+	  evap_rate = double(j)/10.0 + 0.1; // test values .3, .5, .7
+	  q_0 = .9 - double(k)/10.0;
+	  double avg_dist = 0;
+	  double avg_time = 0;
+	  double avg_iter = 0;
+	  for(int l = 0; l < 10; l++) { // 10 tests
+	    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
+	    Result result = acs_alg.runACS();
+	    avg_dist += result.best_length;
+	    avg_time += result.run_time;
+	    avg_iter += double(result.iteration_of_best_ant);
+	  }//10 tests
+	  avg_dist = avg_dist/10;
+	  avg_time = avg_time/10;
+	  avg_iter = avg_iter/10;
+	  acs_output_string = acs_output_string + to_string(beta) + "," + to_string(evap_rate) + "," +
+	    to_string(q_0) + "," + to_string(avg_time) + "," + to_string(avg_dist) + "," +
+	    to_string(avg_iter) + "\n";
+	}
+      }
+    }
+    acs_output_file.open(acs_filename);
+    acs_output_file << acs_output_string;
+    acs_output_file.close();
   }// end of else
 
   return 0;

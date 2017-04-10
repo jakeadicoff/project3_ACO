@@ -24,13 +24,14 @@ struct Ant {
   int last() {return tour[tour.size()-1];} // last city in tour
 };
 
+/*
 enum Coordinates {GEOGRAPHIC, EUCLIDEAN};
 
 struct Cities {
     vector<vector<double>> positions;
     Coordinates coordinate_system;
 };
-
+*/
 struct Result {
     double best_length;
     double run_time;
