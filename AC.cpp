@@ -1,14 +1,14 @@
 #include "AC.h"
 
 AntSystem::AntSystem(double a, double b,double e, int colonySize,
-	  int numIterations, Cities tsp, double tau_0) {
+	  int numIterations, vector<vector<double>> cityDistances, double tau_0) {
   this->alpha = a; //scaling factor
   this->beta = b;  //scaling factor
   this->evap_rate = e;
   this->colony_size = colonySize;
   this->num_iterations = numIterations;
-  this->num_cities = tsp.positions.size();
-  this->coordinates = tsp.coordinate_system;
+  this->num_cities = cityDistances.size();
+  
 
   vector<vector <double > > ps; //dummy vector - pheremones
   vector<vector <double > > ds; //dummy vector - distances
@@ -18,69 +18,32 @@ AntSystem::AntSystem(double a, double b,double e, int colonySize,
   this->colony = dummy_colony;
 
   this->results = data;
-  this->dists = ds;
+  this->dists = cityDistances;
   this->pheromones = ps;
-
+    init_0_phers();
   dummy_ant.length = MAX_DOUBLE;
   this->best_ant = dummy_ant;
-
-  init_dists_and_phers(tsp.positions);
 }
 
+/*
 void AntSystem::make_ants() {
   for(int i = 0; i < colony_size; ++i) {
     Ant new_ant;
     colony.push_back(new_ant);
   }
 }
+*/
 
-/**
- * Distance and Pheremone tables fully populate a N by N array, such
- * that the distance from city A to B can be looked up in constant
- * time with dists[A][B], and similarly pheremones[A][B] for
- * pheremones.
- *
- * Only the "lower" half the of array is populated with the
- * information, so when the lookup is executed, the LARGER index
- * always needs to come first.
- */
-void AntSystem::init_dists_and_phers(vector <vector <double> > cityLocations) {
-  vector <double> row1; //distance from A to B
-  vector <double> row2; //pheremone on path AB
-
-  switch(coordinates) {
-  case EUCLIDEAN:
+void AntSystem::init_0_phers(){
+    pheromones.clear();
+    vector<double> row;
     for(int i = 0; i < num_cities; i++) {
-      row1.clear();
-      row2.clear();
-
-      // each row is one column longer than the last one -- makes a
-      // triangle, excluding the midline
-      for(int j = 0; j < i; j++) {
-	double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
-	row1.push_back(dist_ij);
-	row2.push_back(0);
-      }
-
-      dists.push_back(row1);
-      pheromones.push_back(row2);
+        row.clear();
+        for(int j = 0; j < i; j++) {
+            row.push_back(0);
+        }
+        pheromones.push_back(row);
     }
-
-  case GEOGRAPHIC:
-    for(int i = 0; i < num_cities; i++) {
-      row1.clear();
-      row2.clear();
-      for(int j = 0; j < i; j++) {
-	double dist_ij = geo_dist(cityLocations[i], cityLocations[j]);
-	row1.push_back(dist_ij);
-	row2.push_back(0);
-      }
-      dists.push_back(row1);
-      pheromones.push_back(row2);
-    }
-  }
-
-  clear_ants();
 }
 
 /**
@@ -97,41 +60,6 @@ void AntSystem::clear_ants() {
   }
 }
 
-// Calculates 2D euclidean distance
-double AntSystem::euc_dist(vector <double> a, vector <double> b) {
-  return sqrt(pow(a[0]-b[0],2)+pow(a[1]-b[1],2));
-}
-
-// change this up
-double AntSystem::geo_dist(vector <double> a, vector <double> b) {
-    double global_lat1, global_lon1, global_lat2, global_lon2;
-    global_lat1 = a[0];
-    global_lon1 = a[1];
-    global_lat2 = b[0];
-    global_lon2 = b[1];
-
-    //calculate distance in radians (check rad & deg conversion)
-    double distance = sin(deg_to_rad(global_lat1)) *
-      sin(deg_to_rad(global_lat2)) + cos(deg_to_rad(global_lat1)) *
-      cos(deg_to_rad(global_lat2)) * cos(deg_to_rad(global_lon2 - global_lon1));
-
-    //convert distance to degrees
-    distance = rad_to_deg(distance);
-
-    //convert degrees to kilometers on the surface of the earth
-    distance = distance * 60 * 1.1515;
-    distance = (6.371 * pi * distance)/180;
-
-    return distance;
-}
-
-double AntSystem::rad_to_deg(double rad) {
-    return (rad * 180 / pi);
-};
-
-double AntSystem::deg_to_rad(double deg) {
-    return (deg * pi / 180);
-};
 
 double AntSystem::lookup_dist(int i, int j) {
   if( i > j) return dists[i][j];

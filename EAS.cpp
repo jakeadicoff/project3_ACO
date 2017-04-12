@@ -53,7 +53,7 @@ Result EAS::run_eas() {
   results.best_length = best_ant.length;
   results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
   
-  cout << "The shortest ACS path is " << best_ant.length << endl;
+  cout << "The shortest EAS path is " << best_ant.length << endl;
   cout << "The shortest greedy path is " << results.greedy_result << endl;
   cout << "Runtime: " << results.run_time << endl;
   

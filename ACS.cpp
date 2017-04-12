@@ -1,8 +1,8 @@
 #include "ACS.h"
 #include <algorithm>
 ACS::ACS(double a, double b, double e, int colonySize, int numIterations,
-         Cities tsp, double t0, double wearFactor, double q0):
-AntSystem(a, b, e, colonySize, numIterations, tsp, t0) {
+         vector<vector<double>> cityDists, double t0, double wearFactor, double q0):
+AntSystem(a, b, e, colonySize, numIterations, cityDists, t0) {
     this->epsilon = wearFactor;
     this->q_0 = q0;
     this->tau_0 = 1/(colonySize * length_nn()); //input t0 in unecessary

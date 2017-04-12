@@ -13,6 +13,7 @@ int main(int argc, char** argv) {
   //process file and get pointer to vector of cities
   Cities tsp = readFile(problem_file_name);
   num_cities = tsp.positions.size();
+  vector<vector<double>> cityDistances = init_dists(tsp, num_cities);
   string input;
   cout << "run all tests? (y / n)" << endl;
   cin >> input;
@@ -30,7 +31,7 @@ int main(int argc, char** argv) {
       tau_0 = -4242424242424; //actually set this in constructor, so this is a placeholder
       num_iterations = 10;
       
-      EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
+      EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, elitism, tau_0);
       Result results = eas_alg.run_eas();
     }
     else if (ant_system == "ACS") {
@@ -44,7 +45,7 @@ int main(int argc, char** argv) {
       q_0 = 0.9;
       num_iterations = 10;
       
-      ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
+      ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, tau_0, epsilon, q_0);
       cout << "ACS constructed" << endl;
       Result results = acs_alg.runACS();
     }
@@ -79,7 +80,7 @@ int main(int argc, char** argv) {
 	  double avg_time = 0;
 	  double avg_iter = 0;
 	  for(int l = 0; l < 10; l++) { // 10 tests
-	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, elitism, tau_0);
+	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityLocations, elitism, tau_0);
 	    Result result = eas_alg.run_eas();
 	    avg_dist += result.best_length;
 	    avg_time += result.run_time;
@@ -112,7 +113,7 @@ int main(int argc, char** argv) {
 	  double avg_time = 0;
 	  double avg_iter = 0;
 	  for(int l = 0; l < 10; l++) { // 10 tests
-	    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, tsp, tau_0, epsilon, q_0);
+	    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityLocations, tau_0, epsilon, q_0);
 	    Result result = acs_alg.runACS();
 	    avg_dist += result.best_length;
 	    avg_time += result.run_time;
@@ -233,100 +234,85 @@ Cities readFile(string problem_file_name) {
 
   return tsp;
 }
-/*
 
-Cities readFile(string problem_file_name) {
 
-  Cities tsp; //object to return
-  vector <vector<double> > vector_of_cities;
-  ifstream problem_stream;    //file stream initialization
-  string next_item_in_stream; //holds item that was just pulled from
-                              //the file stream
-  int big_int = 100000;       //for advancing filestream
+/**
+ * Distance and Pheremone tables fully populate a N by N array, such
+ * that the distance from city A to B can be looked up in constant
+ * time with dists[A][B], and similarly pheremones[A][B] for
+ * pheremones.
+ *
+ * Only the "lower" half the of array is populated with the
+ * information, so when the lookup is executed, the LARGER index
+ * always needs to come first.
+ */
 
-  //open file stream
-  problem_stream.open(problem_file_name.c_str(), ios::in);
-  if(!problem_stream.good()) {
-    cout << "Error: not able to open file" << endl;
-  }
-
-  string line;
-  char curr_line[100];
-
-  //look for coordinate system -- Geographic or Euclidean
-  while(problem_stream.peek()!=EOF) {
-    problem_stream.ignore(big_int, 'E');
-    problem_stream.getline(curr_line, 100);
-    line = curr_line;
-
-    if(line.substr(0, 4).compare("DGE_") == 0) {
-      break;
+vector<vector<double>> init_dists(Cities cities, int num_cities) {
+    vector <double> row; //distance from A to B
+    vector<vector<double>> dists;
+    vector<vector<double>> cityLocations = cities.positions;
+    
+    switch(cities.coordinate_system) {
+        case EUCLIDEAN:
+            for(int i = 0; i < num_cities; i++) {
+                row.clear();
+                
+                // each row is one column longer than the last one -- makes a
+                // triangle, excluding the midline
+                for(int j = 0; j < i; j++) {
+                    double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
+                    row.push_back(dist_ij);
+                }
+                
+                dists.push_back(row);
+            }
+            
+        case GEOGRAPHIC:
+            for(int i = 0; i < num_cities; i++) {
+                row.clear();
+                for(int j = 0; j < i; j++) {
+                    double dist_ij = geo_dist(cityLocations[i], cityLocations[j]);
+                    row.push_back(dist_ij);
+                }
+                dists.push_back(row);
+            }
     }
-  }
-
-  int string_index = 0;
-
-  for(int i = 0; i - line.length(); ++i) {
-    if(curr_line[i] == ':') {
-      string_index = i;
-    }
-  }
-  string_index = string_index + 2;
-
-  string edge_weights = line.substr(string_index);
-  cout << edge_weights << endl;
-
-  //Geo
-  if(edge_weights == "GEO") {
-    tsp.coordinate_system = GEOGRAPHIC;
-    cout << "GEO" << endl;
-  }
-
-  //Euclidean
-  else {
-    tsp.coordinate_system = EUCLIDEAN;
-    cout << "EUC_2D" << endl;
-  }
-
-  //Now, keep ignoring until the "NODE_COORD_SECTION" line (city coordinates)
-  while(problem_stream.peek()!=EOF) {
-    problem_stream.ignore(big_int, 'N');
-    problem_stream.getline(curr_line, 100);
-    line = curr_line;
-
-    //break once we find the appropriate line
-    if(line.substr(0, 4).compare("ODE_") == 0) {
-      break;
-    }
-  }
-
-  //Loop through city coordinates
-  while(problem_stream.peek()!=EOF) { //run until end of file
-    vector <double> city; // Holds coordinates of the city
-
-    problem_stream >> next_item_in_stream; //City ID value, discarded
-    problem_stream >> next_item_in_stream; //City ID value, discarded
-
-    if(next_item_in_stream.substr(0, 3).compare("EOF") == 0) {
-      break;
-    }
-
-    for(int i = 0; i < 2; ++i) { //run until end of line
-      city.push_back(stod(next_item_in_stream));
-      cout << next_item_in_stream << "\t";
-      problem_stream >> next_item_in_stream;
-    }
-    cout << endl;
-    vector_of_cities.push_back(city);
-    city.clear();
-    //problem_stream >> next_item_in_stream; //advance past "0"
-  }
-    cout << "Number of Cities: " << vector_of_cities.size()  << endl;
-
-    cout << "end of debug for file parsing" << endl;
-
-    tsp.positions = vector_of_cities;
-
-    return tsp;
+    return dists;
 }
-*/
+
+
+// Calculates 2D euclidean distance
+double euc_dist(vector <double> a, vector <double> b) {
+    return sqrt(pow(a[0]-b[0],2)+pow(a[1]-b[1],2));
+}
+
+// change this up
+double geo_dist(vector <double> a, vector <double> b) {
+    double global_lat1, global_lon1, global_lat2, global_lon2;
+    global_lat1 = a[0];
+    global_lon1 = a[1];
+    global_lat2 = b[0];
+    global_lon2 = b[1];
+    
+    //calculate distance in radians (check rad & deg conversion)
+    double distance = sin(deg_to_rad(global_lat1)) *
+    sin(deg_to_rad(global_lat2)) + cos(deg_to_rad(global_lat1)) *
+    cos(deg_to_rad(global_lat2)) * cos(deg_to_rad(global_lon2 - global_lon1));
+    
+    //convert distance to degrees
+    distance = rad_to_deg(distance);
+    
+    //convert degrees to kilometers on the surface of the earth
+    distance = distance * 60 * 1.1515;
+    distance = (6.371 * pi * distance)/180;
+    
+    return distance;
+}
+
+double rad_to_deg(double rad) {
+    return (rad * 180 / pi);
+};
+
+double deg_to_rad(double deg) {
+    return (deg * pi / 180);
+};

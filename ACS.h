@@ -22,7 +22,7 @@ class ACS : public AntSystem {
 public:
   Result runACS();
   ACS(double a, double b, double e, int colonySize,
-      int numIterations, Cities tsp, double t0,
+      int numIterations, vector<vector<double>> cityDists, double t0,
       double wearFactor, double q0);
 
 private:

@@ -43,10 +43,10 @@ struct Result {
 class AntSystem {
 public:
     AntSystem(double a,double b,double e, int colonySize,
-	      int numIterations, Cities tsp, double tau_0);
+	      int numIterations, vector<vector<double>> cityLocations, double tau_0);
 
 protected:
-    Coordinates coordinates;
+    
     Result results;
     Ant best_ant; //just such a cool ant
 
@@ -57,17 +57,13 @@ protected:
     int colony_size, num_iterations, num_cities;
 
     void probabilistic_next_step(int ant_index);
-    void init_dists_and_phers(vector<vector< double> > cityLocations);
     double euc_dist(vector <double> a, vector <double> b);
     double lookup_dist(int i, int j);
     double lookup_pher(int i, int j);
     void clear_ants();
     double length_nn();
     void make_ants();
-    //    void init_phers();
-    double rad_to_deg(double rad);
-    double deg_to_rad(double deg);
-    double geo_dist(vector<double> a, vector<double> b);
+    void init_0_phers();
 };
 
 #endif
