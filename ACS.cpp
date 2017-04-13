@@ -150,13 +150,13 @@ void ACS::make_tours() {
     
     
     int starting_city = rand() % num_cities;
-    cout << "1" << endl;
+
     colony[i].tour.push_back(starting_city);
     colony[i].unvisited[starting_city] = false;
     
     for(int j = 0; j < num_cities - 1; ++j) {
       double step_prob = (double) rand() / RAND_MAX;
-      cout << num_cities << endl;
+
       if(step_prob < q_0) {
 	//cout << "Exploitation" << endl;
 	exploitation_step(i);
