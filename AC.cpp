@@ -8,7 +8,6 @@ AntSystem::AntSystem(double a, double b,double e, int colonySize,
   this->colony_size = colonySize;
   this->num_iterations = numIterations;
   this->num_cities = cityDistances.size();
-  
 
   vector<vector <double > > ps; //dummy vector - pheremones
   vector<vector <double > > ds; //dummy vector - distances
@@ -20,9 +19,10 @@ AntSystem::AntSystem(double a, double b,double e, int colonySize,
   this->results = data;
   this->dists = cityDistances;
   this->pheromones = ps;
-    init_0_phers();
+  init_0_phers();
   dummy_ant.length = MAX_DOUBLE;
   this->best_ant = dummy_ant;
+  
 }
 
 /*

@@ -13,6 +13,7 @@ Result EAS::run_eas() {
   srand (time(NULL));
   double start_time = clock();
   double curr_best = MAX_DOUBLE;
+
   
   this->tau_0 = (elitism_factor + colony_size)/(evap_rate * length_nn()); //input t0 in unecessary
   init_phers();

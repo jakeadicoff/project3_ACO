@@ -248,71 +248,72 @@ Cities readFile(string problem_file_name) {
  */
 
 vector<vector<double>> init_dists(Cities cities, int num_cities) {
-    vector <double> row; //distance from A to B
-    vector<vector<double>> dists;
-    vector<vector<double>> cityLocations = cities.positions;
-    
-    switch(cities.coordinate_system) {
-        case EUCLIDEAN:
-            for(int i = 0; i < num_cities; i++) {
-                row.clear();
-                
-                // each row is one column longer than the last one -- makes a
-                // triangle, excluding the midline
-                for(int j = 0; j < i; j++) {
-                    double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
-                    row.push_back(dist_ij);
-                }
-                
-                dists.push_back(row);
-            }
-            
-        case GEOGRAPHIC:
-            for(int i = 0; i < num_cities; i++) {
-                row.clear();
-                for(int j = 0; j < i; j++) {
-                    double dist_ij = geo_dist(cityLocations[i], cityLocations[j]);
-                    row.push_back(dist_ij);
-                }
-                dists.push_back(row);
-            }
+  vector <double> row; //distance from A to B
+  vector<vector<double>> dists;
+  vector<vector<double>> cityLocations = cities.positions;
+  
+  switch(cities.coordinate_system) {
+  case EUCLIDEAN:
+    for(int i = 0; i < num_cities; i++) {
+      row.clear();
+      
+      // each row is one column longer than the last one -- makes a
+      // triangle, excluding the midline
+      for(int j = 0; j < i; j++) {
+	double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
+	row.push_back(dist_ij);
+      }
+      
+      dists.push_back(row);
     }
-    return dists;
+    break;
+  case GEOGRAPHIC:
+    for(int i = 0; i < num_cities; i++) {
+      row.clear();
+      for(int j = 0; j < i; j++) {
+	double dist_ij = geo_dist(cityLocations[i], cityLocations[j]);
+	row.push_back(dist_ij);
+      }
+      dists.push_back(row);
+    }
+    break;
+  }
+  return dists;
 }
 
 
 // Calculates 2D euclidean distance
 double euc_dist(vector <double> a, vector <double> b) {
-    return sqrt(pow(a[0]-b[0],2)+pow(a[1]-b[1],2));
+  return sqrt(pow(a[0]-b[0],2)+pow(a[1]-b[1],2));
 }
 
 // change this up
 double geo_dist(vector <double> a, vector <double> b) {
-    double global_lat1, global_lon1, global_lat2, global_lon2;
-    global_lat1 = a[0];
-    global_lon1 = a[1];
-    global_lat2 = b[0];
-    global_lon2 = b[1];
-    
-    //calculate distance in radians (check rad & deg conversion)
-    double distance = sin(deg_to_rad(global_lat1)) *
+  double global_lat1, global_lon1, global_lat2, global_lon2;
+  global_lat1 = a[0];
+  global_lon1 = a[1];
+  global_lat2 = b[0];
+  global_lon2 = b[1];
+  
+  //calculate distance in radians (check rad & deg conversion)
+  double distance = sin(deg_to_rad(global_lat1)) *
     sin(deg_to_rad(global_lat2)) + cos(deg_to_rad(global_lat1)) *
     cos(deg_to_rad(global_lat2)) * cos(deg_to_rad(global_lon2 - global_lon1));
-    
-    //convert distance to degrees
-    distance = rad_to_deg(distance);
-    
-    //convert degrees to kilometers on the surface of the earth
-    distance = distance * 60 * 1.1515;
-    distance = (6.371 * pi * distance)/180;
-    
-    return distance;
+  
+  //convert distance to degrees
+  distance = rad_to_deg(distance);
+  
+  //convert degrees to kilometers on the surface of the earth
+  distance = distance * 60 * 1.1515;
+  distance = (6.371 * pi * distance)/180;
+  
+  return distance;
 }
 
 double rad_to_deg(double rad) {
-    return (rad * 180 / pi);
+  return (rad * 180 / pi);
 };
 
 double deg_to_rad(double deg) {
-    return (deg * pi / 180);
+  return (deg * pi / 180);
 };
