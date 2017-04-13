@@ -13,47 +13,51 @@ AntSystem(a, b, e, colonySize, numIterations, cityDists, t0) {
 }
 
 void ACS::init_phers() {
-    for(int i = 0; i < num_cities; ++i)
+  for(int i = 0; i < num_cities; ++i)
         for(int j = 0; j < i; ++j)
             pheromones[i][j] = tau_0;
 }
 
 Result ACS::runACS() {
-    double start_time = clock();
-    double curr_best = MAX_DOUBLE;
+  double start_time = clock();
+  double curr_best = MAX_DOUBLE;
+  
+  for(int i = 0; i < num_iterations; ++i) {
+    cout << "1" << endl;
+    make_tours();
+    cout << "2" << endl;
+    wear_away();
+    cout << "3" << endl;
+    add_pheromone();
+    cout << "4" << endl;
     
-    for(int i = 0; i < num_iterations; ++i) {
-        make_tours();
-        wear_away();
-        add_pheromone();
-        
-        clear_ants();
-        if(i % 10 == 0) {
-            results.best_ant_every_10.push_back(best_ant.length);
-            cout << "Iteration " << i << ": " << best_ant.length;
-            cout << endl;
-        }
-        if(best_ant.length < curr_best) {
-            curr_best = best_ant.length;
-            results.iteration_of_best_ant = i;
-            for(int j = 0; j < best_ant.tour.size(); ++j) {
-               // cout << best_ant.tour[j] << ", ";
-            }
-            //cout << endl;
-        }
+    clear_ants();
+    if(i % 10 == 0) {
+      results.best_ant_every_10.push_back(best_ant.length);
+      cout << "Iteration " << i << ": " << best_ant.length;
+      cout << endl;
     }
-    
-    double end_time = clock();
-    
-    results.greedy_result = length_nn();
-    results.best_length = best_ant.length;
-    results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
-    
-    cout << "The shortest ACS path is " << best_ant.length << endl;
-    cout << "The shortest greedy path is " << results.greedy_result << endl;
-    cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
-
-    return results;
+    if(best_ant.length < curr_best) {
+      curr_best = best_ant.length;
+      results.iteration_of_best_ant = i;
+      for(int j = 0; j < best_ant.tour.size(); ++j) {
+	// cout << best_ant.tour[j] << ", ";
+      }
+      //cout << endl;
+    }
+  }
+  
+  double end_time = clock();
+  
+  results.greedy_result = length_nn();
+  results.best_length = best_ant.length;
+  results.run_time = (end_time - start_time)/CLOCKS_PER_SEC;
+  
+  cout << "The shortest ACS path is " << best_ant.length << endl;
+  cout << "The shortest greedy path is " << results.greedy_result << endl;
+  cout << "Runtime: " << (end_time - start_time)/CLOCKS_PER_SEC << endl;
+  
+  return results;
 }
 
 

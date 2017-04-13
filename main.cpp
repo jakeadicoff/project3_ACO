@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
 	  double avg_time = 0;
 	  double avg_iter = 0;
 	  for(int l = 0; l < 10; l++) { // 10 tests
-	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityLocations, elitism, tau_0);
+	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, elitism, tau_0);
 	    Result result = eas_alg.run_eas();
 	    avg_dist += result.best_length;
 	    avg_time += result.run_time;
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
 	  double avg_time = 0;
 	  double avg_iter = 0;
 	  for(int l = 0; l < 10; l++) { // 10 tests
-	    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityLocations, tau_0, epsilon, q_0);
+	    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, tau_0, epsilon, q_0);
 	    Result result = acs_alg.runACS();
 	    avg_dist += result.best_length;
 	    avg_time += result.run_time;
