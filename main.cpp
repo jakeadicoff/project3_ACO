@@ -2,6 +2,8 @@
 
 using namespace std;
 
+
+
 int main(int argc, char** argv) {
   string ant_system = argv[1];
   string problem_file_name = argv[2];
@@ -13,6 +15,7 @@ int main(int argc, char** argv) {
   //process file and get pointer to vector of cities
   Cities tsp = readFile(problem_file_name);
   num_cities = tsp.positions.size();
+
   string input;
   cout << "run all tests? (y / n)" << endl;
   cin >> input;

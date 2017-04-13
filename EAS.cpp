@@ -147,5 +147,5 @@ void EAS::update_best_ant() {
         }
     }
 
-    //  cout << "best ant len: " << best_ant.length << endl;
+  //cout << "best ant len: " << best_ant.length << endl;
 }
