@@ -22,14 +22,11 @@ Result ACS::runACS() {
   double start_time = clock();
   double curr_best = MAX_DOUBLE;
   
+  clear_ants(); // also initiallizes
   for(int i = 0; i < num_iterations; ++i) {
-    cout << "1" << endl;
     make_tours();
-    cout << "2" << endl;
     wear_away();
-    cout << "3" << endl;
     add_pheromone();
-    cout << "4" << endl;
     
     clear_ants();
     if(i % 10 == 0) {
@@ -149,38 +146,39 @@ void ACS::exploitation_step(int ant_index) {
 }
 
 void ACS::make_tours() {
-    for(int i = 0; i < colony_size; ++i) {
-        
-        
-        int starting_city = rand() % num_cities;
-        
-        colony[i].tour.push_back(starting_city);
-        colony[i].unvisited[starting_city] = false;
-        
-        for(int j = 0; j < num_cities - 1; ++j) {
-            double step_prob = (double) rand() / RAND_MAX;
-            
-            if(step_prob < q_0) {
-                //cout << "Exploitation" << endl;
-                exploitation_step(i);
-            }
-            else {
-                //cout << "Probabilistic" << endl;
-                probabilistic_next_step(i);
-            }
-            
-        }
-        
-        //cout << "mostly done tours" << endl;
-        // make ant return to starting city
-        
-        
-        //cout << colony[i].tour.back() << endl;
-        colony[i].length += lookup_dist(starting_city, colony[i].tour.back());
-        colony[i].tour.push_back(starting_city);
-        // update best ant as necessary
-        if(colony[i].length < best_ant.length) {
-            best_ant = colony[i];
-        }
+  for(int i = 0; i < colony_size; ++i) {
+    
+    
+    int starting_city = rand() % num_cities;
+    cout << "1" << endl;
+    colony[i].tour.push_back(starting_city);
+    colony[i].unvisited[starting_city] = false;
+    
+    for(int j = 0; j < num_cities - 1; ++j) {
+      double step_prob = (double) rand() / RAND_MAX;
+      cout << num_cities << endl;
+      if(step_prob < q_0) {
+	//cout << "Exploitation" << endl;
+	exploitation_step(i);
+	
+      }
+      else {
+	//cout << "Probabilistic" << endl;
+	probabilistic_next_step(i);
+      }
+      
     }
+    
+    //cout << "mostly done tours" << endl;
+    // make ant return to starting city
+    
+    
+    //cout << colony[i].tour.back() << endl;
+    colony[i].length += lookup_dist(starting_city, colony[i].tour.back());
+    colony[i].tour.push_back(starting_city);
+    // update best ant as necessary
+    if(colony[i].length < best_ant.length) {
+      best_ant = colony[i];
+    }
+  }
 }
