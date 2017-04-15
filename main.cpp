@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
       elitism = colony_size;
       tau_0 = -4242424242424; //actually set this in constructor, so this is a placeholder
       num_iterations = 10;
-      
+
       EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, elitism, tau_0);
       Result results = eas_alg.run_eas();
     }
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
       tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
       q_0 = 0.9;
       num_iterations = 10;
-      
+
       ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, tau_0, epsilon, q_0);
       cout << "ACS constructed" << endl;
       Result results = acs_alg.runACS();
@@ -68,11 +68,12 @@ int main(int argc, char** argv) {
     alpha = 1;
     // specific for EAS
     colony_size = 10;
-    
+
     for(int i = 0; i < 3; i++) { // vary beta
       for(int j = 0; j < 3; j++) { // vary evap
 	for(int k = 0; k < 3; k++) { // vary elitism
-	  // set params for testing     
+	  cout << "Running EAS test configuration " << i*9 + j*3 + k << "/26" << endl;
+	  // set params for testing
 	  beta = i*3+3;
 	  evap_rate = double(j)*2/10.0 + 0.3; // test values .3, .5, .7
 	  elitism = (k+1)*(colony_size)/2;
@@ -106,6 +107,7 @@ int main(int argc, char** argv) {
     for(int i = 0; i < 3; i++) {
       for(int j = 0; j < 3; j++) {
 	for(int k = 0; k < 3; k++) {
+	  cout << "Running ACS test configuration " << i*9 + j*3 + k << "/26" << endl;
 	  beta = i*3+3;
 	  evap_rate = double(j)/10.0 + 0.1; // test values .3, .5, .7
 	  q_0 = .9 - double(k)/10.0;
@@ -251,19 +253,19 @@ vector<vector<double>> init_dists(Cities cities, int num_cities) {
   vector <double> row; //distance from A to B
   vector<vector<double>> dists;
   vector<vector<double>> cityLocations = cities.positions;
-  
+
   switch(cities.coordinate_system) {
   case EUCLIDEAN:
     for(int i = 0; i < num_cities; i++) {
       row.clear();
-      
+
       // each row is one column longer than the last one -- makes a
       // triangle, excluding the midline
       for(int j = 0; j < i; j++) {
 	double dist_ij = euc_dist(cityLocations[i], cityLocations[j]);
 	row.push_back(dist_ij);
       }
-      
+
       dists.push_back(row);
     }
     break;
@@ -294,19 +296,19 @@ double geo_dist(vector <double> a, vector <double> b) {
   global_lon1 = a[1];
   global_lat2 = b[0];
   global_lon2 = b[1];
-  
+
   //calculate distance in radians (check rad & deg conversion)
   double distance = sin(deg_to_rad(global_lat1)) *
     sin(deg_to_rad(global_lat2)) + cos(deg_to_rad(global_lat1)) *
     cos(deg_to_rad(global_lat2)) * cos(deg_to_rad(global_lon2 - global_lon1));
-  
+
   //convert distance to degrees
   distance = rad_to_deg(distance);
-  
+
   //convert degrees to kilometers on the surface of the earth
   distance = distance * 60 * 1.1515;
   distance = (6.371 * pi * distance)/180;
-  
+
   return distance;
 }
 
