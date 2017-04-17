@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
   num_cities = tsp.positions.size();
   vector<vector<double>> cityDistances = init_dists(tsp, num_cities);
   string input;
+  string input2;
   cout << "run all tests? (y / n)" << endl;
   cin >> input;
   if(input == "n") {
@@ -52,89 +53,156 @@ int main(int argc, char** argv) {
     cout << "******************************************" << endl;
   }
   else {
-    string acs_filename, eas_filename;
-    ofstream eas_output_file;
-    ofstream acs_output_file;
-    cout << "name eas file (with .csv): " << endl;
-    cin >> eas_filename;
-    cout << "name acs file (with .csv): " << endl;
-    cin >> acs_filename;
-    // header for output files
-    string eas_output_string = "EAS\nbeta,evap,elitism,avg time,avg dist,avg iter\n";
-    string acs_output_string = "ACS\nbeta,evap,q_0,avg time,avg dist,avg iter\n";
-    // general params for both algs
-    tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
-    num_iterations = 100; // ????
-    alpha = 1;
-    // specific for EAS
-    colony_size = 10;
-
-    for(int i = 0; i < 3; i++) { // vary beta
-      for(int j = 0; j < 3; j++) { // vary evap
-	for(int k = 0; k < 3; k++) { // vary elitism
-	  cout << "Running EAS test configuration " << i*9 + j*3 + k << "/26" << endl;
-	  // set params for testing
-	  beta = i*3+3;
-	  evap_rate = double(j)*2/10.0 + 0.3; // test values .3, .5, .7
-	  elitism = (k+1)*(colony_size)/2;
-	  double avg_dist = 0;
-	  double avg_time = 0;
-	  double avg_iter = 0;
-	  for(int l = 0; l < 10; l++) { // 10 tests
-	    EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, elitism, tau_0);
-	    Result result = eas_alg.run_eas();
-	    avg_dist += result.best_length;
-	    avg_time += result.run_time;
-	    avg_iter += double(result.iteration_of_best_ant);
-	  }//10 tests
-	  avg_dist = avg_dist/10;
-	  avg_time = avg_time/10;
-	  avg_iter = avg_iter/10;
-	  eas_output_string = eas_output_string + to_string(beta) + "," + to_string(evap_rate) + "," +
-	    to_string(elitism) + "," + to_string(avg_time) + "," + to_string(avg_dist) + "," +
-	    to_string(avg_iter) + "\n";
-	}// vary elitism
-      } // vary evap
-    } // vary beta
-    eas_output_file.open(eas_filename);
-    eas_output_file << eas_output_string;
-    eas_output_file.close();
-
-    // static parameters
-    epsilon = 0.1;
-    colony_size = 20;
-    // tests
-    for(int i = 0; i < 3; i++) {
-      for(int j = 0; j < 3; j++) {
-	for(int k = 0; k < 3; k++) {
-	  cout << "Running ACS test configuration " << i*9 + j*3 + k << "/26" << endl;
-	  beta = i*3+3;
-	  evap_rate = double(j)/10.0 + 0.1; // test values .3, .5, .7
-	  q_0 = .9 - double(k)/10.0;
-	  double avg_dist = 0;
-	  double avg_time = 0;
-	  double avg_iter = 0;
-	  for(int l = 0; l < 10; l++) { // 10 tests
-	    ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, tau_0, epsilon, q_0);
-	    Result result = acs_alg.runACS();
-	    avg_dist += result.best_length;
-	    avg_time += result.run_time;
-	    avg_iter += double(result.iteration_of_best_ant);
-	  }//10 tests
-	  avg_dist = avg_dist/10;
-	  avg_time = avg_time/10;
-	  avg_iter = avg_iter/10;
-	  acs_output_string = acs_output_string + to_string(beta) + "," + to_string(evap_rate) + "," +
-	    to_string(q_0) + "," + to_string(avg_time) + "," + to_string(avg_dist) + "," +
-	    to_string(avg_iter) + "\n";
+    cout << "test pase 1 or 2 (enter 1 or 2):" << endl;
+    cin >> input2;
+    if(input2 == "1") {
+      string acs_filename;// = "acs_grid_test.csv";
+      string eas_filename;// = "eas_grid_test.csv";
+      ofstream eas_output_file;
+      ofstream acs_output_file;
+      cout << "name eas file (with .csv): " << endl;
+      cin >> eas_filename;
+      cout << "name acs file (with .csv): " << endl;
+      cin >> acs_filename;
+      // header for output files
+      string eas_output_string = "EAS\nbeta,evap,elitism,avg time,avg dist,avg iter\n";
+      string acs_output_string = "ACS\nbeta,evap,q_0,avg time,avg dist,avg iter\n";
+      // general params for both algs
+      tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
+      num_iterations = 100; // ????
+      alpha = 1;
+      // specific for EAS
+      colony_size = 10;
+      
+      for(int i = 0; i < 3; i++) { // vary beta
+	for(int j = 0; j < 3; j++) { // vary evap
+	  for(int k = 0; k < 3; k++) { // vary elitism
+	    // set params for testing     
+	    beta = i*3+3;
+	    evap_rate = double(j)*2/10.0 + 0.3; // test values .3, .5, .7
+	    elitism = (k+1)*(colony_size)/2;
+	    double avg_dist = 0;
+	    double avg_time = 0;
+	    double avg_iter = 0;
+	    for(int l = 0; l < 10; l++) { // 10 tests
+	      EAS eas_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, elitism, tau_0);
+	      Result result = eas_alg.run_eas();
+	      avg_dist += result.best_length;
+	      avg_time += result.run_time;
+	      avg_iter += double(result.iteration_of_best_ant);
+	    }//10 tests
+	    avg_dist = avg_dist/10;
+	    avg_time = avg_time/10;
+	    avg_iter = avg_iter/10;
+	    eas_output_string = eas_output_string + to_string(beta) + "," + to_string(evap_rate) + "," +
+	      to_string(elitism) + "," + to_string(avg_time) + "," + to_string(avg_dist) + "," +
+	      to_string(avg_iter) + "\n";
+	  }// vary elitism
+	} // vary evap
+      } // vary beta
+      eas_output_file.open(eas_filename);
+      eas_output_file << eas_output_string;
+      eas_output_file.close();
+      
+      // static parameters
+      epsilon = 0.1;
+      colony_size = 20;
+      // tests
+      for(int i = 0; i < 3; i++) {
+	for(int j = 0; j < 3; j++) {
+	  for(int k = 0; k < 3; k++) {
+	    beta = i*3+3;
+	    evap_rate = double(j)/10.0 + 0.1; // test values .3, .5, .7
+	    q_0 = .9 - double(k)/10.0;
+	    double avg_dist = 0;
+	    double avg_time = 0;
+	    double avg_iter = 0;
+	    for(int l = 0; l < 10; l++) { // 10 tests
+	      ACS acs_alg(alpha, beta, evap_rate, colony_size, num_iterations, cityDistances, tau_0, epsilon, q_0);
+	      Result result = acs_alg.runACS();
+	      avg_dist += result.best_length;
+	      avg_time += result.run_time;
+	      avg_iter += double(result.iteration_of_best_ant);
+	    }//10 tests
+	    avg_dist = avg_dist/10;
+	    avg_time = avg_time/10;
+	    avg_iter = avg_iter/10;
+	    acs_output_string = acs_output_string + to_string(beta) + "," + to_string(evap_rate) + "," +
+	      to_string(q_0) + "," + to_string(avg_time) + "," + to_string(avg_dist) + "," +
+	      to_string(avg_iter) + "\n";
+	  }
 	}
       }
+      acs_output_file.open(acs_filename);
+      acs_output_file << acs_output_string;
+      acs_output_file.close();
+    }// end of else
+    
+    else{
+      vector <string> file_names;
+      string output_file_name;
+      ofstream output_file;
+      cout << "name the output file, yo!" << endl;
+      cin >> output_file_name;
+      file_names.push_back("T2");
+      file_names.push_back("T1.tsp");
+      num_iterations = 100;
+      colony_size = 10;
+      tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
+      
+      //eas params
+      double e_alpha = 1;
+      double e_beta = 9;
+      double e_evap = .3;
+      double e_elitism = 30;
+      //acs params
+      double a_alpha = 1;
+      double a_beta=9;
+      double a_evap=.1;
+      double a_epsilon=.1;
+      double a_q_0=.8;
+      //outputs
+      string output_string = ",EAS,,,,ACS\nfile,avg dist,avg time, avg iter,,avg dist,avg time,avg iter\n";
+      for(int i = 0; i < file_names.size(); i++) {
+	Cities problem = readFile(file_names[i]);
+	vector<vector<double>> distances = init_dists(problem,problem.positions.size());
+	cout << distances[15].size() << endl;
+	double e_avg_dist = 0;
+	double e_avg_time = 0;
+	double e_avg_iter = 0;
+	double a_avg_dist = 0;
+	double a_avg_time = 0;
+	double a_avg_iter = 0;
+	for(int j = 0; j < 5; j++) {
+	  
+	  EAS eas_alg(e_alpha,e_beta,e_evap,colony_size,num_iterations,distances,e_elitism,tau_0);
+	  Result e_results = eas_alg.run_eas();
+	  e_avg_dist += e_results.best_length;
+	  e_avg_time += e_results.run_time;
+	  e_avg_iter += double(e_results.iteration_of_best_ant);
+	}
+	for(int j = 0; j < 5; j++) {
+	  ACS acs_alg(a_alpha,a_beta,a_evap,colony_size,num_iterations,distances,tau_0,a_epsilon,a_q_0);
+	  Result a_results = acs_alg.runACS();
+	  a_avg_dist += a_results.best_length;
+	  a_avg_time += a_results.run_time;
+	  a_avg_iter += double(a_results.iteration_of_best_ant);
+	}
+	e_avg_dist = e_avg_dist/5;
+	e_avg_time = e_avg_time/5;
+	e_avg_iter = e_avg_iter/5;
+	a_avg_dist = a_avg_dist/5;
+	a_avg_time = a_avg_time/5;
+	a_avg_iter = a_avg_iter/5;
+	output_string = output_string + file_names[i]+ ",";
+	output_string = output_string + to_string(e_avg_dist) + "," + to_string(e_avg_time) + "," + to_string(e_avg_iter) + ",,";
+	output_string = output_string + to_string(a_avg_dist) + "," + to_string(a_avg_time) + "," + to_string(a_avg_iter) + "\n";
+      }
+      output_file.open(output_file_name);
+      output_file << output_string;
+      output_file.close();
     }
-    acs_output_file.open(acs_filename);
-    acs_output_file << acs_output_string;
-    acs_output_file.close();
-  }// end of else
-
+  }
   return 0;
 }
 

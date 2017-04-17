@@ -17,21 +17,17 @@ Result EAS::run_eas() {
 
   this->tau_0 = (elitism_factor + colony_size)/(evap_rate * length_nn()); //input t0 in unecessary
   init_phers();
-
   for(int i = 0; i < num_iterations; i++) {
     clear_ants();
-
     pick_initial_cities();
     for(int j = 0; j < num_cities - 1; j++) {
       for(int k = 0; k < colony_size; k++) {
 	probabilistic_next_step(k);
       } // colony
     } // cities
-
     add_last_cities();
     update_best_ant();
     pheromone_update();
-
     if(i % 10 == 0) {
       results.best_ant_every_10.push_back(best_ant.length);
       //cout << "Iteration " << i << ": " << best_ant.length;
@@ -90,9 +86,6 @@ void EAS::update_ant(int ant_index, int city_index) {
   colony[ant_index].length += lookup_dist(colony[ant_index].last(),city_index);
   colony[ant_index].tour.push_back(city_index);
   colony[ant_index].unvisited[city_index] = false;
-  //cout << "a" << endl;
-
-  //cout << "b" << endl;
 }
 
 void EAS::pheromone_update() {
@@ -109,7 +102,6 @@ void EAS::regular_ant_contribution() {
   //for each ant
   for(int i = 0; i < colony_size; i++) {
     Ant curr_ant = colony[i]; //not the fruit
-
     //for each leg in its tour
     for(int j = 0; j < num_cities; j++) {
       int city_A = curr_ant.tour[i];
@@ -124,7 +116,6 @@ void EAS::best_ant_contribution() {
   for(int i = 0; i < num_cities; i++) {
     int city_A = best_ant.tour[i];
     int city_B = best_ant.tour[i+1];
-
     add_pheremone(city_A, city_B, elitism_factor*1/best_ant.length);
   }
 }
