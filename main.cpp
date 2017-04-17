@@ -144,10 +144,10 @@ int main(int argc, char** argv) {
       ofstream output_file;
       cout << "name the output file, yo!" << endl;
       cin >> output_file_name;
-      file_names.push_back("T2");
-      file_names.push_back("T1.tsp");
-      num_iterations = 100;
-      colony_size = 10;
+
+      file_names = {"u2152.tsp","pcb3038.tsp","fnl4461.tsp","rl5915.tsp"};
+      num_iterations = 5;
+      colony_size = 5;
       tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
       
       //eas params
@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
       for(int i = 0; i < file_names.size(); i++) {
 	Cities problem = readFile(file_names[i]);
 	vector<vector<double>> distances = init_dists(problem,problem.positions.size());
-	cout << distances[15].size() << endl;
+     
 	double e_avg_dist = 0;
 	double e_avg_time = 0;
 	double e_avg_iter = 0;
@@ -201,6 +201,7 @@ int main(int argc, char** argv) {
       output_file.open(output_file_name);
       output_file << output_string;
       output_file.close();
+      
     }
   }
   return 0;
