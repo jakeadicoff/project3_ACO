@@ -146,8 +146,8 @@ int main(int argc, char** argv) {
       cin >> output_file_name;
 
       file_names = {"u2152.tsp","pcb3038.tsp","fnl4461.tsp","rl5915.tsp"};
-      num_iterations = 5;
-      colony_size = 5;
+      num_iterations = 100;
+      colony_size = 20;
       tau_0 = -4242242424; //actually set this in constructor, so this is a placeholder
       
       //eas params
